@@ -1,0 +1,377 @@
+\def\year{2017}\relax
+\documentclass[letterpaper]{article}
+\usepackage{aaai17}
+\usepackage{times}
+\usepackage{helvet}
+\usepackage{courier}
+
+% Packages added by Rob
+% Also: grffile, latexsym, textcomp, longtable, booktabs, amsmath, amsfonts, amssymb?
+\usepackage[utf8]{inputenc}
+\usepackage{url}
+\usepackage{graphicx}
+\providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}%
+
+\frenchspacing
+\setlength{\pdfpagewidth}{8.5in}
+\setlength{\pdfpageheight}{11in}
+\pdfinfo{
+/Title (Insert Your Title Here)
+/Author (Put All Your Authors Here, Separated by Commas)}
+\setcounter{secnumdepth}{0}
+\begin{document}
+
+\title{ConceptNet 5.5: An Open Multilingual Knowledge Graph about Natural Language}
+\author{Robert Speer\\ Luminoso Technologies, Inc.}
+
+\maketitle
+
+
+\section{Abstract}\label{abstract}
+
+ConceptNet is a knowledge graph that connects words and phrases of
+natural language with labeled edges. It is designed to improve natural
+language applications by allowing the application to better understand
+the meanings behind the words people use. Version 5.5 extends its
+representation to include word forms in many languages.
+
+ConceptNet provides applications with understanding that they would not acquire
+from distributional semantics (such as word2vec) alone, nor from narrower
+resources such as WordNet or DBPedia. We demonstrate this with state-of-the-art
+results on intrinsic evaluations (word relatedness and analogies) that
+translate into improvements on an extrinsic evaluation in story understanding
+(the Story Cloze Test).
+
+
+\section{Introduction}\label{introduction}
+
+ConceptNet is a knowledge graph that connects words and phrases of
+natural language (\emph{terms}) with labeled, weighted edges
+(\emph{assertions}). The original release of ConceptNet \cite{liu2004conceptnet}
+was intended as a parsed representation of Open Mind Common Sense
+\cite{singh2002omcs}, a crowd-sourced knowledge project. This paper
+describes the release of ConceptNet 5.5, which has expanded to include
+lexical and world knowledge from many different sources in many
+languages.
+
+[...]
+
+In this paper, we will concisely represent an assertion as a triple of
+its start node, relation label, and end node: the assertion that ``a dog
+has a tail'' can be represented as (\emph{dog}, \emph{HasA},
+\emph{tail}).
+
+
+\section{Structure of ConceptNet}\label{structure-of-conceptnet}
+
+
+\subsection{Knowledge sources}\label{knowledge-sources}
+
+ConceptNet 5.5 is built from the following sources:
+
+\begin{itemize}
+\item
+  Facts acquired from Open Mind Common Sense (OMCS) \cite{singh2002omcs}
+\item
+  Information extracted from parsing Wiktionary, in multiple languages,
+  with a custom parser (``Wikiparsec'')
+\item
+  ``Games with a purpose'' designed to collect common knowledge,
+  including Verbosity \cite{vonahn2006verbosity} in English, nadya.jp
+  \cite{nakahara2011nadya} in Japanese, and the PTT Pet Game
+  \cite{kuo2009petgame} in Chinese
+\item
+  Open Multilingual WordNet \cite{bond2013linking}, a linked-data
+  representation of WordNet \cite{miller1998wordnet} and its parallel
+  projects in multiple languages, representing word meanings as
+  ``synsets'' of synonymous word senses
+\item
+  JMDict \cite{breen2004jmdict}, a Japanese-multilingual dictionary
+\item
+  OpenCyc \cite{matuszek2006cyc}, a hierarchy of hypernyms provided by
+  Cyc, a system that represents common sense knowledge in predicate
+  logic
+\item
+  A subset of DBPedia \cite{auer2007dbpedia}, a network of facts
+  extracted from Wikipedia infoboxes
+\end{itemize}
+
+With the combination of these sources, ConceptNet contains over 21
+million edges and over 8 million nodes. Its English vocabulary contains
+approximately 1,500,000 nodes, and there are 83 languages in which it
+contains at least 10,000 nodes.
+
+The largest source of input for ConceptNet is Wiktionary, which provides
+18.1 million edges and is mostly responsible for its large multilingual
+vocabulary. However, much of the character of ConceptNet comes from OMCS
+and the various games with a purpose, which express many different kinds
+of relations between terms, such as \emph{PartOf} (``a wheel is part of
+a car'') and \emph{UsedFor} (``a car is used for driving'').
+
+
+\subsection{Relations}\label{relations}
+
+ConceptNet uses a closed class of selected relations such as \emph{IsA},
+\emph{UsedFor}, and \emph{CapableOf}, intended to
+represent a relationship independently of the language or the source of
+the terms it connects.
+
+ConceptNet 5.5 aims to align its knowledge resources on its core set of 35
+relations. These generalized relations are similar in purpose to WordNet's
+relations such as \emph{hyponym} and \emph{meronym}, as well as to the qualia
+of the Generative Lexicon theory \cite{pustejovsky1991generative}.
+
+To allow for expansion to new kinds of knowledge, a data
+source can provide new relations that are considered provisional and
+appear in a separate namespace. ConceptNet 5.5 includes 10 provisional
+relations that come from DBPedia's much larger class of relations,
+including \emph{dbpedia/knownFor} and \emph{dbpedia/genre}.
+
+Relations with specific semantics, such as \emph{UsedFor} and
+\emph{HasPrerequisite}, tend to connect common words and phrases, while
+rarer words are connected by more general relations such as
+\emph{Synonym} and \emph{RelatedTo}.
+
+ConceptNet's edges are directed, but as a new feature in ConceptNet 5.5,
+some relations are designated as being symmetric: \emph{SimilarTo},
+\emph{RelatedTo}, \emph{EtymologicallyRelatedTo}, \emph{Synonym},
+\emph{Antonym}, and \emph{DistinctFrom}. The directionality of these
+edges is unimportant. The assertion (\emph{A}, \emph{SimilarTo},
+\emph{B}) is considered equivalent to (\emph{B}, \emph{SimilarTo},
+\emph{A}).
+
+
+\subsection{Term representation}\label{term-representation}
+
+ConceptNet represents terms in a standardized form. The text is
+Unicode-normalized (as NFKC) and lowercased, and split into
+non-punctuation tokens using a generalization of the Unicode word
+segmentation algorithm. The tokens are joined with underscores, and this
+text is prepended with the URI \texttt{/c/lang}, where \emph{lang} is
+the BCP 47 language code for the language the term is in. As an example,
+the English term ``United States'' becomes
+\texttt{/c/en/united\_states}. Relations have a separate namespace of
+URIs prefixed with \texttt{/r}, such as \texttt{/r/PartOf}.
+
+The particular tokenizer used is the default tokenizer in the Python
+package \texttt{wordfreq}, version 1.5. Its most notable difference from
+Unicode tokenization is that it does not insert word breaks between all
+Han or Thai characters, whereas the Unicode algorithm would.
+
+Often, in multilingual code, one must make a choice about how coarsely
+to represent languages, because languages and dialects can have varying
+degrees of mutual intelligibility and partially but not entirely
+overlapping vocabularies. Examples include whether to distinguish
+Simplified from Traditional Chinese, Norwegian Bokmål from Nynorsk,
+Bosnian from Croatian from Serbian, and regional variants of Arabic such
+as Egyptian Arabic from Modern Standard Arabic. ConceptNet makes the
+decision to use the coarsest language codes in all of these cases:
+\texttt{zh} for all variants of Chinese, \texttt{no} for Norwegian,
+\texttt{sh} for Serbo-Croatian, \texttt{ar} for Arabic, and so on. The
+motivation is that it's better to include additional terms from a
+related language than to leave gaps in a language's vocabulary. This
+additionally avoids the need to disambiguate data sources that also use
+coarse language codes, such as Serbo-Croatian entries in Wiktionary.
+
+Previous versions of ConceptNet required terms in English to be in
+lemmatized form, so that, for example, ``drive'' and ``driving'' would
+be represented as the same term, allowing the assertions (\emph{car},
+\emph{UsedFor}, \emph{driving}) and (\emph{drive},
+\emph{HasPrerequisite}, \emph{have license}) to be connected. With
+lemmatization, the term ``United States'' was represented as the
+confusing-looking \texttt{/c/en/unite\_state}, and some terms with
+ambiguous lemmatization were difficult to look up. ConceptNet 5.5
+removes the lemmatizer, and instead relates inflections of words using
+the \emph{FormOf} relation. The two assertions above are now linked by
+the third assertion (\emph{driving}, \emph{FormOf}, \emph{drive}), and
+both ``driving'' and ``drive'' can be looked up in ConceptNet.
+
+One English-specific normalization remains, because English terms are
+more likely to come from free text than other languages. A small set of
+stopwords is removed from all English terms: ``a'', ``an'', ``the'', and
+as the first word of a term, ``to''. Removing other stopwords is left up
+to the importer for a particular data source.
+
+
+\subsection{Vocabulary}\label{vocabulary}
+
+When building a knowledge graph, the decision of what a node should
+represent has significant effects on how the graph is used. It also has
+implications that can make linking and importing other resources
+non-trivial, because different resources make different decisions about
+their representation.
+
+In ConceptNet, a node is a word or phrase of a natural language, often a
+common word in its undisambiguated form. The word ``lead'' in English is
+a term in ConceptNet, represented by the URI \texttt{/c/en/lead}, even
+though it has multiple meanings. The advantage of ambiguous terms is
+that they can be extracted easily from natural language, which is also
+ambiguous. This representation is equivalent to that used by systems
+that learn distributional semantics from text, such as word2vec
+\cite{mikolov2013word2vec}.
+
+ConceptNet imports knowledge from some other systems, but this usually
+is not as straightforward as, for example, simply including WordNet as a
+subgraph of ConceptNet. These other systems have their own target
+vocabularies that need to be aligned with ConceptNet, which is a
+somewhat lossy operation. WordNet's nodes are synsets -- sets of senses
+of words that are assumed to be interchangeable, even though they may
+have different connotations. DBPedia's nodes are titles of encyclopedia
+articles, which are generally either specific named entities or topic
+areas such as ``Astronomy''. OpenCyc's nodes are a set of logical
+predicates, with heuristically-generated mappings to natural language
+phrases. All of these have an underspecified many-to-many mapping to
+ConceptNet terms, and importing them thus requires heuristics to
+transform them into ConceptNet's vocabulary.
+
+A term that is imported from another knowledge graph will be connected
+to ConceptNet nodes via the \texttt{ExternalURL} ConceptNet relation.
+(This is similar in spirit to the OWL \texttt{sameAs} relation, but
+\texttt{sameAs} is not suited for a many-to-many mapping because it is
+supposed to be transitive.) This preserves the provenance of the data
+and enables looking up what the untransformed data was, and also allows
+ConceptNet to participate in the broader ecosystem of Linked Open Data.
+
+\subsection{Word senses}\label{word-senses}
+
+ConceptNet's representation allows for more specific, disambiguated
+versions of a term. The URI \texttt{/c/en/lead/n} refers to noun senses
+of the word ``lead'', and is effectively included within
+\texttt{/c/en/lead} when searching or traversing ConceptNet. Many data
+sources provide information about parts of speech, allowing us to use
+this as a common representation that provides a small amount of
+disambiguation.
+
+We have experimented with further disambiguating individual word senses,
+as in \texttt{/c/en/lead/n/metal}, following up on work that showed that
+word senses can be disambiguated by finding the best match to nearby
+words on features including ConceptNet \cite{havasi2010coarse}.
+
+However, we have not found a satisfying way to include a vocabulary of
+word senses in ConceptNet, as there is no currently standardized
+vocabulary of word senses. Resources that distinguish word senses, such
+as WordNet, Wiktionary, and to some extent DBPedia, each use their own
+resource-specific vocabulary of word senses. Mappings between these
+various vocabularies exist \cite{miller2014alignment}, but they are a
+topic of ongoing research which has not produced a stable target for
+word sense disambiguation. In ConceptNet, we tried including these
+disambiguations in resource-specific namespaces (such as
+\texttt{/c/en/lead/n/wp/electronics} for the sense of ``lead''
+disambiguated as ``Electronics'' on the English Wikipedia), which would
+be linked to their parent terms by \texttt{SenseOf} relations. We
+ultimately chose not to include these disambiguations in ConceptNet
+because they decreased its performance on intrinsic evaluations of word
+similarity. The confusion created by undisambiguated words was not as
+bad as the sparsity created by unaligned word senses.
+
+
+\subsection{Tracking the provenance of knowledge}\label{provenance}
+
+Each assertion contains extra data for tracking the provenance of the
+knowledge it contains, which is used to find systematic errors and bad
+contributions. Sources are represented by URIs and divided into multiple
+types. The prefix \texttt{/s/contributor} represents individual people
+who contributed knowledge to OMCS or one of its sister projects.
+\texttt{/s/activity} represents what a contributor was doing when they
+contributed the knowledge, such as responding to a prompt or playing a
+game with a purpose. \texttt{/s/resource} represents an existing
+knowledge resource, such as WordNet or Wiktionary. \texttt{/s/process}
+represents a process for transforming knowledge, such as the Wiktionary
+parser or a rule for fixing the parsing of prepositions in OMCS.
+
+The provenance of an assertion is a set of sets of sources. The inner
+sets indicate multiple sources that were used together to create the
+assertion: for example, a contributor, an activity, and a process may
+all be involved in collecting one assertion. Each inner set of sources
+contributes some amount of weight to the assertion. This number is
+provided by the import scripts for each knowledge source, which are
+asked to estimate the reliability of each assertion they produce.
+
+The outer set represents sources that separately provided the same
+assertion. When there are multiple separate sources, they add their
+weights together, indicating that the assertion is more reliable because
+we know it for multiple reasons.
+
+
+\subsection{The use-mention distinction}
+
+ConceptNet does not strictly enforce the use-mention distinction. Some
+of its assertions, such as (\emph{cat}, \emph{IsA}, \emph{animal}),
+relate the meanings of the words as they are used, while others, such as
+(\emph{cat}, \emph{DerivedFrom}, \emph{cattus}), mention the words as
+objects in themselves. However, it is intended that all relations,
+including these ``mention'' relations, informatively represent something
+about the meanings of the words. The etymology of a word, as indicated
+by the \emph{DerivedFrom} or \emph{EtymologicallyRelatedTo} relations,
+is often a clue to its meaning.
+
+Unacceptable assertions would include (\emph{cat}, \emph{HasA},
+\emph{three letters}) or (\emph{noon}, \emph{IsA}, \emph{palindrome}).
+Sometimes these appear in data sources, particularly games with a
+purpose, whose players are tempted to use wordplay to achieve their
+goals. The code that imports data from the word game Verbosity
+heuristically detects wordplay, and mentions of words as words, so that
+it can filter them out.
+
+
+\section{Finding related words using ConceptNet}
+\label{finding-related-words-using-conceptnet}
+
+It is important to note that ConceptNet is not just a package of word
+embeddings; it consists of structured knowledge that can be used in many
+representations.  Word embeddings are, however, a popular representation of
+semantics at the moment that can benefit hugely from the knowledge contained in
+ConceptNet. We will show, via several standard evaluations, that word
+embeddings that are informed by ConceptNet are more effective than those
+inferred only from the distributional semantics of a corpus of text.
+
+\subsection{Building word embeddings from ConceptNet}
+% Describe ConceptNet PPMI here
+
+\subsection{Combining ConceptNet with distributional word embeddings}
+% Expanded retrofitting and redecomposition
+
+\subsection{Intrinsic evaluations of word relatedness}
+\label{intrinsic-evaluations}
+% Word relatedness and analogy evaluations
+
+\subsection{Extrinsic evaluations of text understanding}
+\label{extrinsic-evaluations}
+% Story Cloze Test
+
+
+% Paragraphs that were cut, but we might include if there's space:
+%
+% WordNet has a fine-grained vocabulary of word senses that are
+% distinguished by the synsets that they participate in. Each language of
+% Wiktionary has its own vocabulary of word senses; the English Wiktionary
+% actually has two different word sense vocabularies, one used for
+% definitions and one used for translations. Wikipedia disambiguation
+% pages are another vocabulary of word senses that can be applied to
+% resources derived from it, such as DBPedia. Granularity can make
+% vocabularies difficult to align: the English word ``run'' has 57 senses
+% in WordNet, 17 in the French Wiktionary, and 4 in the German Wiktionary.
+% The English Wiktionary has 45 senses of ``run'' that are used in
+% translations, which map in an underspecified way to at least 96
+% definitions.
+
+% Sometimes this alignment involves using extra information that
+% incidentally comes with the data. To include WordNet, we need to assign
+% each synset a primary label that will be used in its semantic relations,
+% and then link other synonyms in the set to that label using the
+% \emph{Synonym} relation. In WordNet RDF 3.1, the labels are unordered,
+% although some terms are more appropriate as primary labels than others.
+% Fortunately, WordNet RDF 2.0, which is linked to the current WordNet RDF
+% 3.1 with \texttt{owl\#SameAs} links, also assigned primary labels to
+% synsets by putting these labels in their URIs. So when the synset at
+% http://wordnet-rdf.princeton.edu/wn31/100028005-n is linked to
+% http://www.w3.org/2006/03/wn/wn20/instances/synset-shape-noun-2, we
+% conclude that its primary label is ``shape''. This is one of many
+% heuristics that are tried when importing WordNet synsets into
+% ConceptNet.
+
+\bibliographystyle{aaai}
+\bibliography{conceptnet-paper}
+
+\end{document}
+
