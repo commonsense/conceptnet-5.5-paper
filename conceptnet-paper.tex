@@ -158,33 +158,33 @@ package \texttt{wordfreq}, version 1.5. Its most notable difference from
 Unicode tokenization is that it does not insert word breaks between all
 Han or Thai characters, whereas the Unicode algorithm would.
 
-Often, in multilingual code, one must make a choice about how coarsely
-to represent languages, because languages and dialects can have varying
-degrees of mutual intelligibility and partially but not entirely
-overlapping vocabularies. Examples include whether to distinguish
-Simplified from Traditional Chinese, Norwegian Bokmål from Nynorsk,
-Bosnian from Croatian from Serbian, and regional variants of Arabic such
-as Egyptian Arabic from Modern Standard Arabic. ConceptNet makes the
-decision to use the coarsest language codes in all of these cases:
-\texttt{zh} for all variants of Chinese, \texttt{no} for Norwegian,
-\texttt{sh} for Serbo-Croatian, \texttt{ar} for Arabic, and so on. The
-motivation is that it's better to include additional terms from a
-related language than to leave gaps in a language's vocabulary. This
-additionally avoids the need to disambiguate data sources that also use
-coarse language codes, such as Serbo-Croatian entries in Wiktionary.
+% Often, in multilingual code, one must make a choice about how coarsely
+% to represent languages, because languages and dialects can have varying
+% degrees of mutual intelligibility and partially but not entirely
+% overlapping vocabularies. Examples include whether to distinguish
+% Simplified from Traditional Chinese, Norwegian Bokmål from Nynorsk,
+% Bosnian from Croatian from Serbian, and regional variants of Arabic such
+% as Egyptian Arabic from Modern Standard Arabic. ConceptNet makes the
+% decision to use the coarsest language codes in all of these cases:
+% \texttt{zh} for all variants of Chinese, \texttt{no} for Norwegian,
+% \texttt{sh} for Serbo-Croatian, \texttt{ar} for Arabic, and so on. The
+% motivation is that it's better to include additional terms from a
+% related language than to leave gaps in a language's vocabulary. This
+% additionally avoids the need to disambiguate data sources that also use
+% coarse language codes, such as Serbo-Croatian entries in Wiktionary.
 
-Previous versions of ConceptNet required terms in English to be in
-lemmatized form, so that, for example, ``drive'' and ``driving'' would
-be represented as the same term, allowing the assertions (\emph{car},
-\emph{UsedFor}, \emph{driving}) and (\emph{drive},
-\emph{HasPrerequisite}, \emph{have license}) to be connected. With
-lemmatization, the term ``United States'' was represented as the
-confusing-looking \texttt{/c/en/unite\_state}, and some terms with
-ambiguous lemmatization were difficult to look up. ConceptNet 5.5
-removes the lemmatizer, and instead relates inflections of words using
-the \emph{FormOf} relation. The two assertions above are now linked by
-the third assertion (\emph{driving}, \emph{FormOf}, \emph{drive}), and
-both ``driving'' and ``drive'' can be looked up in ConceptNet.
+Previous versions of ConceptNet required terms in English to be in lemmatized
+form, so that, for example, ``drive'' and ``driving'' would be represented as
+the same term, allowing the assertions (\emph{car}, \emph{UsedFor},
+\emph{driving}) and (\emph{drive}, \emph{HasPrerequisite}, \emph{have license})
+to be connected. With lemmatization, the term ``United States'' was represented
+as the confusing-looking \texttt{/c/en/unite\_state}, looking up terms required
+ConceptNet-specific preprocessing, and some terms with ambiguous lemmatization
+were difficult to look up. ConceptNet 5.5 removes the lemmatizer, and instead
+relates inflections of words using the \emph{FormOf} relation. The two
+assertions above are now linked by the third assertion (\emph{driving},
+\emph{FormOf}, \emph{drive}), and both ``driving'' and ``drive'' can be looked
+up in ConceptNet.
 
 One English-specific normalization remains, because English terms are
 more likely to come from free text than other languages. A small set of
