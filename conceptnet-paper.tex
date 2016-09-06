@@ -116,7 +116,7 @@ ConceptNet uses a closed class of selected relations such as \emph{IsA},
 represent a relationship independently of the language or the source of
 the terms it connects.
 
-ConceptNet 5.5 aims to align its knowledge resources on its core set of 35
+ConceptNet 5.5 aims to align its knowledge resources on its core set of 36
 relations. These generalized relations are similar in purpose to WordNet's
 relations such as \emph{hyponym} and \emph{meronym}, as well as to the qualia
 of the Generative Lexicon theory \cite{pustejovsky1991generative}.
@@ -326,7 +326,14 @@ embeddings that are informed by ConceptNet are more effective than those
 inferred only from the distributional semantics of a corpus of text.
 
 \subsection{Building word embeddings from ConceptNet}
-% Describe ConceptNet PPMI here
+[...] % Describe ConceptNet PPMI here
+
+To save space and time when computing, we prune the poorly-connected fringe of
+the ConceptNet graph: terms that are connected to fewer than 3 edges. These
+terms would have only a weak effect on the semantic spaces we compute from
+ConceptNet. We still include them in the vocabulary by assigning them vectors
+after the fact, as the average of the vectors of the terms they are connected
+to.
 
 \subsection{Combining ConceptNet with distributional word embeddings}
 % Expanded retrofitting and redecomposition
@@ -334,6 +341,54 @@ inferred only from the distributional semantics of a corpus of text.
 \subsection{Intrinsic evaluations of word relatedness}
 \label{intrinsic-evaluations}
 % Word relatedness and analogy evaluations
+
+One way to evaluate the intrinsic performance of a semantic space is to ask it
+to rank the relatedness of pairs of words, and compare its judgments to human
+judgments.\footnote{It is sometimes important to distinguish \emph{similarity}
+from \emph{relatedness}. For example, the term ``coffee'' is related to
+``mug'', but coffee is not \emph{similar} to a mug. What a machine can learn
+from the connectivity of ConceptNet is focused on relatedness.} If one word in
+a pair is out-of-vocabulary, the pair is assumed to have a relatedness of 0. A
+good semantic space will provide a ranking of relatedness that is highly
+correlated with the human gold-standard ranking, as measured by its Spearman
+correlation ($\rho$).
+
+Many gold standards of word relatedness are in common use. Here, we focus on
+MEN-3000 \cite{bruni2014men}, a large crowd-sourced ranking of common words; RW
+\cite{luong2013rw}, a ranking of rare words; and MTurk-771
+\cite{halawi2012mturk}, another crowd-sourced evaluation of a variety of words.
+To avoid manually overfitting by designing our semantic space around a
+particular evaluation, we experimented using smaller development sets, holding
+out some test data until it was time to include results in this paper:
+
+\begin{itemize}
+\item
+    MEN-3000 is already divided into a 2000-item development set and a
+    1000-item test set. We use the results from the test set as the final results.
+\item
+    RW has no standard dev/test breakdown. We sampled 2/3 of its items as
+    a development set and held out the other 1/3 (every third line of the file,
+    starting with the third). However, we report results on the complete set,
+    for consistency with other publications.
+\item
+    We did not use MTurk-771 in development, holding out the entire set
+    as a final test, showing that ConceptNet performs well on a
+    previously-unseen vocabulary.
+\end{itemize}
+
+
+[...]
+
+Previous work that combines ConceptNet in an ensemble with other word
+embeddings \cite{speer2016ensemble} has included a time-consuming step of
+unifying the vocabularies of multiple resources and interpolating what the
+missing word embeddings should be. With ConceptNet 5.5, we found this
+unnecessary.  The vocabulary of ConceptNet 5.5 is sufficient to cover all but
+four words that appear anywhere in the English test data.\footnote{We are
+content to return zero-vectors for the four out-of-vocabulary words, which are
+``amazings'', ``internationaler'', ``liverpools'', and ``discoverys''. All of
+these are from the Rare Words evaluation, and are probably the result of
+imperfect machine-generation of examples.}
 
 \subsection{Extrinsic evaluations of text understanding}
 \label{extrinsic-evaluations}
