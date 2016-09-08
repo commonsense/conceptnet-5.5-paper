@@ -237,7 +237,8 @@ ConceptNet to participate in the broader ecosystem of Linked Open Data.
 ConceptNet's representation allows for more specific, disambiguated
 versions of a term. The URI \texttt{/c/en/lead/n} refers to noun senses
 of the word ``lead'', and is effectively included within
-\texttt{/c/en/lead} when searching or traversing ConceptNet. Many data
+\texttt{/c/en/lead} when searching or traversing ConceptNet, and
+linked to it with the implicit relation \emph{SenseOf}. Many data
 sources provide information about parts of speech, allowing us to use
 this as a common representation that provides a small amount of
 disambiguation.
@@ -258,7 +259,7 @@ word sense disambiguation. In ConceptNet, we tried including these
 disambiguations in resource-specific namespaces (such as
 \texttt{/c/en/lead/n/wp/electronics} for the sense of ``lead''
 disambiguated as ``Electronics'' on the English Wikipedia), which would
-be linked to their parent terms by \texttt{SenseOf} relations. We
+be linked to their parent terms by \emph{SenseOf} relations. We
 ultimately chose not to include these disambiguations in ConceptNet
 because they decreased its performance on intrinsic evaluations of word
 similarity. The confusion created by undisambiguated words was not as
@@ -293,25 +294,35 @@ weights together, indicating that the assertion is more reliable because
 we know it for multiple reasons.
 
 
-\subsection{The use-mention distinction}
+% \subsection{The use-mention distinction}
 
-ConceptNet does not strictly enforce the use-mention distinction. Some
-of its assertions, such as (\emph{cat}, \emph{IsA}, \emph{animal}),
-relate the meanings of the words as they are used, while others, such as
-(\emph{cat}, \emph{DerivedFrom}, \emph{cattus}), mention the words as
-objects in themselves. However, it is intended that all relations,
-including these ``mention'' relations, informatively represent something
-about the meanings of the words. The etymology of a word, as indicated
-by the \emph{DerivedFrom} or \emph{EtymologicallyRelatedTo} relations,
-is often a clue to its meaning.
+% ConceptNet does not strictly enforce the use-mention distinction. Some
+% of its assertions, such as (\emph{cat}, \emph{IsA}, \emph{animal}),
+% relate the meanings of the words as they are used, while others, such as
+% (\emph{cat}, \emph{DerivedFrom}, \emph{cattus}), mention the words as
+% objects in themselves. However, it is intended that all relations,
+% including these ``mention'' relations, informatively represent something
+% about the meanings of the words. The etymology of a word, as indicated
+% by the \emph{DerivedFrom} or \emph{EtymologicallyRelatedTo} relations,
+% is often a clue to its meaning.
 
-Unacceptable assertions would include (\emph{cat}, \emph{HasA},
-\emph{three letters}) or (\emph{noon}, \emph{IsA}, \emph{palindrome}).
-Sometimes these appear in data sources, particularly games with a
-purpose, whose players are tempted to use wordplay to achieve their
-goals. The code that imports data from the word game Verbosity
-heuristically detects wordplay, and mentions of words as words, so that
-it can filter them out.
+% Unacceptable assertions would include (\emph{cat}, \emph{HasA},
+% \emph{three letters}) or (\emph{noon}, \emph{IsA}, \emph{palindrome}).
+% Sometimes these appear in data sources, particularly games with a
+% purpose, whose players are tempted to use wordplay to achieve their
+% goals. The code that imports data from the word game Verbosity
+% heuristically detects wordplay, and mentions of words as words, so that
+% it can filter them out.
+
+\section{Related work}
+
+% WordNet
+% Freebase / Google Knowledge Graph
+% DBPedia
+% Retrofitting
+% word2vec
+% GloVe
+% Levy, Hyperwords
 
 
 \section{Finding related words using ConceptNet}
@@ -326,6 +337,7 @@ embeddings that are informed by ConceptNet are more effective than those
 inferred only from the distributional semantics of a corpus of text.
 
 \subsection{Building word embeddings from ConceptNet}
+\label{pruning}
 [...] % Describe ConceptNet PPMI here
 
 To save space and time when computing, we prune the poorly-connected fringe of
@@ -337,6 +349,16 @@ to.
 
 \subsection{Combining ConceptNet with distributional word embeddings}
 % Expanded retrofitting and redecomposition
+
+\section{Evaluation methods}
+
+[...]
+
+To compare the word-embedding ensemble presented in this paper (ConceptNet
+Numberbatch) to other systems, we will first compare results on intrinsic
+evaluations of the word embeddings themselves, involving word relatedness and
+analogies. We will also use an extrinsic evaluation of story understanding,
+showing that better embeddings lead to better performance on a linguistic task.
 
 \subsection{Intrinsic evaluations of word relatedness}
 \label{intrinsic-evaluations}
@@ -390,8 +412,43 @@ content to return zero-vectors for the four out-of-vocabulary words, which are
 these are from the Rare Words evaluation, and are probably the result of
 imperfect machine-generation of examples.}
 
-\subsection{Extrinsic evaluations of text understanding}
-\label{extrinsic-evaluations}
+\subsection{Intrinsic evaluations of analogies}
+
+Evaluations of analogies help to show that a semantic space can approximate
+relationships between words by comparing their relatedness values, even without
+taking explicit relationships into account.
+
+Much of the groundwork for evaluating systems' ability to solve analogies was
+laid by Peter Turney, including his method of Latent Relational Analysis
+\cite{turney2005lra}, which was quite effective at understanding
+relations by repeatedly searching the Web for the words involved in them.
+A newer method called SuperSim \cite{turney2013distributional} does not require
+Web searching. These methods are evaluated on a dataset of 374 SAT questions
+that Turney and his collaborators have collected, which they provide on request.
+Unfortunately, the questions are not licensed for free distribution.
+
+[... describe our pairwise analogy heuristic ...]
+
+Many systems now are instead evaluated on a synthetic dataset that was packaged
+with Google's word2vec, which tests a much smaller variety of analogies focused
+on syntactic changes to words, gendered words, and geographic facts. Levy
+showed that comparing word similarities with the 3CosMul heuristic
+\cite{levy2015embeddings} performs best on this data, and made his results
+easily reproducible and comparable by providing evaluation software called
+Hyperwords. We will use Hyperwords in this paper to compare systems on the
+Google analogy task, as well as the purely syntactic MSR task.
+
+The Google and MSR evaluations test whether a system returns the single word
+deemed to be the correct completion of an analogy, out of its entire
+vocabulary. The results are thus extremely sensitive to the size of the
+vocabulary, and benefit from a limited vocabulary that includes enough of the
+prompt words. When exporting ConceptNet Numberbatch to the Hyperwords format,
+we select the 200,000 most common English words, according to the
+\emph{wordfreq} data set \cite{speer2016wordfreq}, that appear in the pruned
+vocabulary of ConceptNet (see ``Building word embeddings from ConceptNet'').
+
+\subsection{An extrinsic evaluation of story understanding}
+\label{extrinsic-evaluation}
 % Story Cloze Test
 
 
