@@ -323,6 +323,14 @@
 # Ways to extend word similarity
 # ------------------------------
 
+@inproceedings{nickel2011rescal,
+  title={A three-way model for collective learning on multi-relational data},
+  author={Nickel, Maximilian and Tresp, Volker and Kriegel, Hans-Peter},
+  booktitle={Proceedings of the 28th international conference on machine learning (ICML-11)},
+  pages={809--816},
+  year={2011}
+}
+
 @inproceedings{mikolov2013distributed,
   title={Distributed representations of words and phrases and their compositionality},
   author={Mikolov, Tomas and Sutskever, Ilya and Chen, Kai and Corrado, Greg S and Dean, Jeff},
@@ -360,12 +368,19 @@
   year={2015}
 }
 
-@inproceedings{nickel2011rescal,
-  title={A three-way model for collective learning on multi-relational data},
-  author={Nickel, Maximilian and Tresp, Volker and Kriegel, Hans-Peter},
-  booktitle={Proceedings of the 28th international conference on machine learning (ICML-11)},
-  pages={809--816},
-  year={2011}
+@article{trask2015sense2vec,
+  author    = {Andrew Trask and
+               Phil Michalak and
+               John Liu},
+  title     = {sense2vec - {A} Fast and Accurate Method for Word Sense Disambiguation
+               In Neural Word Embeddings},
+  journal   = {CoRR},
+  volume    = {abs/1511.06388},
+  year      = {2015},
+  url       = {http://arxiv.org/abs/1511.06388},
+  timestamp = {Tue, 01 Dec 2015 19:22:34 +0100},
+  biburl    = {http://dblp.uni-trier.de/rec/bib/journals/corr/TraskML15},
+  bibsource = {dblp computer science bibliography, http://dblp.org},
 }
 
 # Corpora and resources
@@ -503,7 +518,7 @@
 }
 
 @article{bruni2014men,
-  title={Multimodal Distributional Semantics.},
+  title={Multimodal Distributional Semantics},
   author={Bruni, Elia and Tran, Nam-Khanh and Baroni, Marco},
   journal={J. Artif. Intell. Res. (JAIR)},
   volume={49},
@@ -665,5 +680,18 @@
   comment={
     Distinguishes similarity and relatedness in wordsim-353. Also recognizes
     the difference between distributional similarity and lexical resources.
+  }
+}
+
+@inproceedings{linzen2016issues,
+  title={Issues in evaluating semantic spaces using word analogies},
+  author={Tal Linzen},
+  booktitle={Proceedings of the 1st Workshop on Evaluating Vector Space Representations for NLP},
+  pages={13--18},
+  year={2016},
+  organization={Association for Computational Linguistics},
+  url={http://aclweb.org/anthology/W/W16/W16-2503.pdf},
+  comment={
+    "Destroys" the Google analogy evaluation.
   }
 }
