@@ -232,11 +232,11 @@ assertions above are now linked by the third assertion (\emph{driving},
 \emph{FormOf}, \emph{drive}), and both ``driving'' and ``drive'' can be looked
 up in ConceptNet.
 
-One English-specific normalization remains, because English terms are
-more likely to come from free text than other languages. A small set of
-stopwords is removed from all English terms: ``a'', ``an'', ``the'', and
-as the first word of a term, ``to''. Removing other stopwords is left up
-to the importer for a particular data source.
+One English-specific normalization remains, because English terms are more
+likely to come from free text than other languages. A small set of stopwords is
+removed from all English terms: ``a'', ``an'', ``the'', and as the first word
+of a term, ``to''. Removing other stopwords is an option left up to the
+importer for a particular data source.
 
 
 \subsection{Vocabulary}\label{vocabulary}
@@ -289,31 +289,14 @@ sources provide information about parts of speech, allowing us to use
 this as a common representation that provides a small amount of
 disambiguation.
 
-We have experimented with further disambiguating individual word senses,
-as in \texttt{/c/en/lead/n/metal}, following up on work that showed that
-word senses can be disambiguated by finding the best match to nearby
-words on features including ConceptNet \cite{havasi2010coarse}.
-
-However, we have not found a satisfying way to include a vocabulary of
-word senses in ConceptNet, as there is no currently standardized
-vocabulary of word senses. Resources that distinguish word senses, such
-as WordNet, Wiktionary, and to some extent DBPedia, each use their own
-resource-specific vocabulary of word senses. Mappings between these
-various vocabularies exist \cite{miller2014alignment}, but they are a
-topic of ongoing research which has not produced a stable target for
-word sense disambiguation.
-
-In ConceptNet, we tried including these
-disambiguations in resource-specific namespaces (such as
-\texttt{/c/en/lead/n/wp/electronics} for the sense of ``lead''
-disambiguated as ``Electronics'' on the English Wikipedia), which would
-be linked to their parent terms by \emph{SenseOf} relations. We
-ultimately chose not to include these disambiguations in ConceptNet
-because they decreased its performance on intrinsic evaluations of word
-similarity. The confusion created by undisambiguated words was not as
-bad as the sparsity created by unaligned word senses. So we have settled
-on disambiguating only the part of speech, which is also the representation
-of word senses targeted by the sense2vec system \cite{trask2015sense2vec}.
+We have experimented with further disambiguating individual word senses, as in
+\texttt{/c/en/lead/n/metal}, following up on work that showed that word senses
+can be disambiguated by finding the best match to nearby words on features
+including ConceptNet \cite{havasi2010coarse}. However, we have not found a
+satisfying vocabulary of distinct word senses to use for this purpose. So far,
+we have settled for disambiguating only the part of speech, which is also the
+representation of word senses targeted by the \emph{sense2vec} system
+\cite{trask2015sense2vec}.
 
 
 \subsection{Tracking the provenance of knowledge}\label{provenance}
