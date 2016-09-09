@@ -38,9 +38,9 @@ representation to include word forms in many languages.
 ConceptNet provides applications with understanding that they would not acquire
 from distributional semantics (such as word2vec) alone, nor from narrower
 resources such as WordNet or DBPedia. We demonstrate this with state-of-the-art
-results on intrinsic evaluations (word relatedness and analogies) that
-translate into improvements on an extrinsic evaluation in story understanding
-(the Story Cloze Test).
+results on intrinsic evaluations of word relatedness that translate into
+improvements on extrinsic evaluations, including SAT analogies and story
+understanding.
 
 
 \section{Introduction}\label{introduction}
@@ -54,13 +54,58 @@ describes the release of ConceptNet 5.5, which has expanded to include
 lexical and world knowledge from many different sources in many
 languages.
 
-[...]
+ConceptNet represents relations between words such as:
 
-In this paper, we will concisely represent an assertion as a triple of
-its start node, relation label, and end node: the assertion that ``a dog
-has a tail'' can be represented as (\emph{dog}, \emph{HasA},
-\emph{tail}).
+\begin{itemize}
+    \item \emph{Fire} is \emph{hot}.
+    \item A \emph{dog} has a \emph{tail}.
+    \item A \emph{net} is used for \emph{catching fish}.
+    \item ``\emph{Leaves}'' is a form of the word ``\emph{leaf}''.
+    \item The word \emph{cold} in English is \emph{studený} in Czech.
+    \item Um \emph{alimento} é usado para \emph{comer} [Food is used for eating].
+\end{itemize}
 
+In this paper, we will concisely assertions such as the above as triples of
+their start node, relation label, and end node: the assertion that ``a dog has
+a tail'' can be represented as (\emph{dog}, \emph{HasA}, \emph{tail}).
+
+It also represents links between knowledge resources. In addition to its own
+knowledge about the English term \emph{astronomy}, for example, ConceptNet
+contains links to URLs that define \emph{astronomy} in WordNet, Wiktionary,
+UMBEL, and DBPedia.
+
+The graph-structured knowledge in ConceptNet can be particularly useful to NLP
+learning algorithms, particularly those based on word embeddings, such as
+\cite{mikolov2013word2vec}. We can use ConceptNet to build semantic spaces that
+are more effective than distributional semantics alone.
+
+The most effective semantic space is one that learns from both distributional
+semantics and ConceptNet, using a generalization of the ``retrofitting'' method
+\cite{faruqui2015retrofitting}. We call this hybrid semantic space ``ConceptNet
+Numberbatch'', to clarify that it is a separate artifact from ConceptNet
+itself.
+
+ConceptNet Numberbatch performs significantly better than other systems across
+many evaluations of word relatedness, and this increase in performance
+translates to improvements on downstream tasks. We will show this by evaluating
+it on the Story Cloze Test \cite{mostafazadeh2016cloze}, where a
+straightforward ``bag of vectors'' from Numberbatch chooses the correct ending
+to a simple story with 60\% accuracy, which is on par with the best known
+system, a neural net specifically trained on the task. We also evaluate it on
+SAT-style analogy questions, where its accuracy of 56.4\% is slightly higher
+than the previous best system, LRA \cite{turney2005lra}, and only slightly
+lower than the performance of the average human test-taker.
+
+Building word embeddings is not the only application of ConceptNet, but it is a
+way to apply ConceptNet that achieves clear benefits and is compatible with
+ongoing research in distributional semantics. This shows the continued relevance of
+ConceptNet, and of explicitly collecting knowledge to improve the computational
+understanding of semantics.
+
+In this paper, we will begin by describing ConceptNet 5.5 and its features,
+show how to use ConceptNet alone as a semantic space and a measure of word
+relatedness, and then proceed to describe and evaluate the hybrid system
+ConceptNet Numberbatch on these various semantic tasks.
 
 \section{Structure of ConceptNet}\label{structure-of-conceptnet}
 
@@ -90,7 +135,8 @@ ConceptNet 5.5 is built from the following sources:
 \item
   OpenCyc \cite{matuszek2006cyc}, a hierarchy of hypernyms provided by
   Cyc, a system that represents common sense knowledge in predicate
-  logic
+  logic, and includes connections to the UMBEL ontology
+  \cite{bergman2008umbel}
 \item
   A subset of DBPedia \cite{auer2007dbpedia}, a network of facts
   extracted from Wikipedia infoboxes
