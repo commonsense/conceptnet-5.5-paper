@@ -104,7 +104,6 @@ ConceptNet Numberbatch on these various semantic tasks.
 
 \section{Structure of ConceptNet}\label{structure-of-conceptnet}
 
-
 \subsection{Knowledge sources}\label{knowledge-sources}
 
 ConceptNet 5.5 is built from the following sources:
@@ -344,16 +343,15 @@ we know it for multiple reasons.
 
 \section{Related work}
 
-% WordNet
-% NELL
-% Freebase / Google Knowledge Graph
-% DBPedia
-% Retrofitting
-% word2vec
-% GloVe
-% Levy, Hyperwords
-% LRA
-% BagPack
+% Existing knowledge resources: WordNet, DBPedia, Freebase / Google Knowledge Graph
+% Word embeddings from distributional semantics: word2vec, GloVe, Levy's Hyperwords
+% Retrofitting (the foundation for how we combine knowledge and distributional semantics)
+% Stuff that NELL is doing with general knowledge and word embeddings
+% Turney's analogies:
+%   LRA (solving SAT analogies with Web search, 2005)
+%   SuperSim (more self-contained than LRA and almost as good, 2013)
+% BagPack: solving analogies using either unstructured text or ConceptNet 4 (Rob will write about this)
+
 
 \section{Finding related words using ConceptNet}
 \label{finding-related-words-using-conceptnet}
@@ -467,16 +465,14 @@ this improves the multilingual performance of the embeddings.
 
 \section{Evaluation methods}
 
-[...]
-
 To compare the word-embedding ensemble presented in this paper (ConceptNet
 Numberbatch) to other systems, we will first compare results on intrinsic
-evaluations of the word embeddings themselves, involving word relatedness and
-proportional analogies. We will also use an extrinsic evaluation of story
-understanding, showing that better embeddings lead to better performance on a
-linguistic task.
+evaluations of the word relatedness metric. We will then apply the word
+embeddings to the downstream tasks of solving proportional analogies and
+choosing the sensible ending to a story, to evaluate whether better embeddings
+translate to better performance on linguistic tasks.
 
-\subsection{Intrinsic evaluations of word relatedness}
+\subsection{Evaluations of word relatedness}
 \label{intrinsic-evaluations}
 % Word relatedness and analogy evaluations
 
@@ -515,7 +511,7 @@ out some test data until it was time to include results in this paper:
 \end{itemize}
 
 
-\subsection{Intrinsic evaluations of analogies}
+\subsection{Solving proportional analogies}
 
 Proportional analogies are statements of the form ``$a_1$ is to $b_1$ as $a_2$
 is to $b_2$''. The task of filling in missing values of a proportional analogy
