@@ -13,6 +13,9 @@
 \usepackage{graphicx}
 \providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}%
 
+% Packages added by Josh
+\usepackage{amsmath}
+
 \frenchspacing
 \setlength{\pdfpagewidth}{8.5in}
 \setlength{\pdfpageheight}{11in}
@@ -355,26 +358,59 @@ we know it for multiple reasons.
 % LRA
 % BagPack
 
-\section{Finding related words using ConceptNet}
-\label{finding-related-words-using-conceptnet}
+\section{Applying ConceptNet to Word Embeddings}
+\label{applying-conceptnet-to-word-embeddings}
 
-It is important to note that ConceptNet is not just a package of word
-embeddings; it consists of structured knowledge that can be used in many
-representations.  Word embeddings are, however, an easily applicable
-representation of semantics that can benefit noticeably from the knowledge
-contained in ConceptNet. We will show, via several standard evaluations, that
-word embeddings that are informed by ConceptNet are more effective than those
-inferred only from the distributional semantics of a corpus of text.
+Word embeddings represent words as low-dimensional vectors of real numbers,
+where vectors that are close together are semantically related. Recent
+developments in training word embeddings have yielded state-of-the-art results
+on many NLP tasks. In this section, we show how to effectively generate
+word embeddings, and improve existing word embeddings using ConceptNet.
 
 \subsection{Building word embeddings from ConceptNet}
-[...] % Describe ConceptNet PPMI here
 
-To save space and time when computing, we prune the poorly-connected fringe of
-the ConceptNet graph: terms that are connected to fewer than 3 edges. These
-terms would have only a weak effect on the semantic spaces we compute from
-ConceptNet. We still include them in the vocabulary by assigning them vectors
-after the fact, as the average of the vectors of the terms they are connected
-to.
+We represent the ConceptNet graph as a sparse, symmetric term-term matrix $M$.
+Each cell contains the sum of the edge weights between the two corresponding
+terms. For performance reasons, we discard terms connected to fewer than three
+edges. The discarded terms will later be reintroduced as the weighted average of
+their related terms.
+
+To measure the association between terms, we treat $M$ as a co-occurrence
+matrix and approximate the positive pointwise mutual information (PPMI) between
+the terms. In addition, we apply context distributional smoothing with
+$\alpha=0.75$ \cite{levy2015embeddings}. This helps discount rare words. The
+resulting matrix $M^\text{PPMI}$ can be computed as:
+
+$$
+M^\text{PPMI}_{ij} =
+\log \frac
+  {\hat{P} \left(i, j\right)}
+  {\hat{P} \left(i\right) \hat{P_\alpha} \left(j\right)}
+$$
+$$
+\hat{P_\alpha} \left(j\right) =
+\frac
+  {\left(\sum_i{M_{ij}}\right)^{0.75}}
+  {\sum_k{\left(\sum_i{M_{ik}}\right)^{0.75}}}
+$$
+
+We generate a dense representation using a truncated singular value
+decomposition (SVD). An SVD computes the optimal $d$-dimensional word embedding,
+in terms $l2$ reconstruction loss. For a given matrix $M$, it returns the
+decomposition
+
+$$
+M = USV^T
+$$
+
+where $U$ and $V$ are orthogonal, and $S$ is diagonal. A Truncated SVD only
+computes the columns of $U$ and the rows of $V$ that correspond to the most
+significant singular values. Here, we select $d=300$.
+
+Finally, we obtain the desired word embeddings by $l1$-normalizing the columns
+of $U$ and $V$, then adding them. Adding $U$ and $V$ together includes second
+order similarity terms into the vectors. $l1$-normalizing the columns can be
+seen as weighing each dimension by their sparsity.
 
 \subsection{Combining ConceptNet with distributional word embeddings}
 
@@ -599,4 +635,3 @@ When exporting ConceptNet Numberbatch to the Hyperwords format, we select the
 \bibliography{conceptnet-paper}
 
 \end{document}
-
