@@ -267,13 +267,14 @@ phrases. All of these have an underspecified many-to-many mapping to
 ConceptNet terms, and importing them thus requires heuristics to
 transform them into ConceptNet's vocabulary.
 
-A term that is imported from another knowledge graph will be connected
-to ConceptNet nodes via the \texttt{ExternalURL} ConceptNet relation.
-(This is similar in spirit to the OWL \texttt{sameAs} relation, but
-\texttt{sameAs} is not suited for a many-to-many mapping because it is
-supposed to be transitive.) This preserves the provenance of the data
-and enables looking up what the untransformed data was, and also allows
-ConceptNet to participate in the broader ecosystem of Linked Open Data.
+A term that is imported from another knowledge graph will be connected to
+ConceptNet nodes via the \texttt{ExternalURL} ConceptNet relation.  (This is
+similar in spirit to the OWL \texttt{sameAs} relation, but \texttt{sameAs} is
+not suited for a many-to-many mapping because it is supposed to be an
+equivalence relation, including being transitive.) This preserves the
+provenance of the data and enables looking up what the untransformed data was,
+and also allows ConceptNet to participate in the broader ecosystem of Linked
+Open Data.
 
 \subsection{Word senses}\label{word-senses}
 
@@ -506,7 +507,7 @@ Numberbatch) to other systems, we will first compare results on intrinsic
 evaluations of the word relatedness metric. We will then apply the word
 embeddings to the downstream tasks of solving proportional analogies and
 choosing the sensible ending to a story, to evaluate whether better embeddings
-translate to better performance on linguistic tasks.
+translate to better performance on semantic tasks.
 
 \subsection{Evaluations of word relatedness}
 \label{intrinsic-evaluations}
@@ -525,7 +526,8 @@ correlation ($\rho$).
 
 Many gold standards of word relatedness are in common use. Here, we focus on
 MEN-3000 \cite{bruni2014men}, a large crowd-sourced ranking of common words; RW
-\cite{luong2013rw}, a ranking of rare words; and MTurk-771
+\cite{luong2013rw}, a ranking of rare words; WordSim-353 \cite{finkelstein2001ws},
+a smaller evaluation that has been used as a benchmark for many methods; and MTurk-771
 \cite{halawi2012mturk}, another crowd-sourced evaluation of a variety of words.
 To avoid manually overfitting by designing our semantic space around a
 particular evaluation, we experimented using smaller development sets, holding
@@ -541,13 +543,15 @@ out some test data until it was time to include results in this paper:
     starting with the third). However, we report results on the complete set,
     for consistency with other publications.
 \item
+    We used all of WordSim-353 in development.
+\item
     We did not use MTurk-771 in development, holding out the entire set
     as a final test, showing that ConceptNet Numberbatch performs well on a
     previously-unseen evaluation.
 \end{itemize}
 
 
-\subsection{Solving proportional analogies}
+\subsection{Solving SAT-style analogies}
 
 Proportional analogies are statements of the form ``$a_1$ is to $b_1$ as $a_2$
 is to $b_2$''. The task of filling in missing values of a proportional analogy
@@ -559,29 +563,50 @@ Much of the groundwork for evaluating systems' ability to solve proportional
 analogies was laid by Peter Turney, including his method of Latent Relational
 Analysis \cite{turney2005lra}, which was quite effective at solving
 proportional analogies by repeatedly searching the Web for the words involved
-in them.  A newer method called SuperSim \cite{turney2013distributional} does
+in them. A newer method called SuperSim \cite{turney2013distributional} does
 not require Web searching. These methods are evaluated on a dataset of 374 SAT
-questions that Turney and his collaborators have collected, which they provide
-on request.  Unfortunately, the questions are not licensed for free
-distribution.
+questions that Turney and his collaborators have collected. Unfortunately, the
+questions are not licensed for free distribution, but Turney provides them on
+request.
 
-[... describe our pairwise analogy heuristic ...]
+Solving analogies over word embeddings is often described as comparing $b_2 -
+a_2$ to $b_1 - a_1$ \cite{mikolov2013word2vec}, but for the task of filling in
+the best pair for $a_2$ and $b_2$, it helps to take advantage of more of the
+structure of the question to provide more constraint than this single comparison.
 
-Many systems now are instead evaluated on a synthetic dataset that was packaged
-with Google's word2vec, which tests a much smaller variety of analogies focused
-on syntactic changes to words, gendered words, and geographic facts. The
-appropriateness of this dataset for measuring vector spaces has been questioned
-\cite{linzen2016issues}, based on the variability of the results and the fact
-that many of the analogies can be solved while ignoring one or more terms in
-the query.
+In a sensible analogy, there will usually be some semantic similarity between
+$a_1$ and $a_2$, and between $b_1$ and $b_2$, regardless of what the other
+terms are, so we should take this direct similarity into account. Also, in many
+cases, a satisfying analogy will still make sense when it is transposed to
+``$a_1$ is to $a_2$ as $b_1$ is to $b_2$''. The analogy ``fire : hot :: ice :
+cold'', for example, can be transposed to ``fire : ice :: hot : cold''.
 
-We will evaluate our system on the Google analogies simply to allow comparisons
-to other systems that focus on this evaluation. Levy showed that comparing word
-similarities with the 3CosMul heuristic \cite{levy2015embeddings} performs best
-on this data, and made his results easily reproducible and comparable by
-providing evaluation software called Hyperwords. We will use Hyperwords in this
-paper to compare systems on the Google analogy task, as well as the purely
-syntactic MSR task.
+This gives us three components that we can weigh to evaluate whether a pair
+($a_2$, $b_2$) completes an analogy: their separate similarity to $a_1$ and $b_1$,
+the differences between the pairs, and the differences between the transposed pairs.
+The total weight does not matter, so we can put these together into a vector
+equation with two free parameters:
+$$s = a_1 \cdot a_2 + b_1 \cdot b_2
++ w_1(b_2 - a_2) \cdot (b_1 - a_1)
++ w_2(b_2 - b_1) \cdot (a_2 - a_1)$$
+
+\subsection{Other proportional analogies}
+
+Many systems have recently been evaluated instead on a synthetic dataset that
+was packaged with Google's word2vec, which tests a much smaller variety of
+analogies focused on syntactic changes to words, gendered words, and geographic
+facts. The results of evaluating on this dataset can be idiosyncratic, because
+of the way it breaks down unevenly into sub-tasks that test a very specific
+form of knowledge, and because many of its analogies can be solved while
+ignoring one or more of the terms \cite{linzen2016issues}.
+
+We will evaluate our system on the Google analogies to enable comparisons to
+other published results. \citeauthor{levy2015embeddings}
+\shortcite{levy2015embeddings} showed that comparing word similarities with the
+3CosMul heuristic performs best on this data, and made his results easily
+reproducible and comparable by providing evaluation software called Hyperwords.
+We will use Hyperwords in this paper to compare systems on the Google analogy
+task, as well as the purely syntactic MSR analogy task, using the 3CosMul heuristic.
 
 The Google and MSR evaluations test whether a system returns the single word
 deemed to be the correct completion of an analogy, out of its entire
@@ -592,40 +617,55 @@ When exporting ConceptNet Numberbatch to the Hyperwords format, we select the
 \cite{speer2016wordfreq}, that appear in the pruned vocabulary of ConceptNet
 (see ``Building word embeddings from ConceptNet'').
 
-\subsection{An extrinsic evaluation of story understanding}
+\subsection{An evaluation of common-sense stories}
 \label{extrinsic-evaluation}
-% Story Cloze Test
 
+The Story Cloze Test \cite{mostafazadeh2016cloze} is a recent evaluation of
+semantic understanding that tests whether a method can choose the sensible
+ending to a simple story. Prompts consist of four sentences that tell a story,
+and two choices are provided for a fifth sentence that concludes the story,
+only one of which makes sense.
 
-% Paragraphs that were cut, but we might include if there's space:
-%
-% WordNet has a fine-grained vocabulary of word senses that are
-% distinguished by the synsets that they participate in. Each language of
-% Wiktionary has its own vocabulary of word senses; the English Wiktionary
-% actually has two different word sense vocabularies, one used for
-% definitions and one used for translations. Wikipedia disambiguation
-% pages are another vocabulary of word senses that can be applied to
-% resources derived from it, such as DBPedia. Granularity can make
-% vocabularies difficult to align: the English word ``run'' has 57 senses
-% in WordNet, 17 in the French Wiktionary, and 4 in the German Wiktionary.
-% The English Wiktionary has 45 senses of ``run'' that are used in
-% translations, which map in an underspecified way to at least 96
-% definitions.
+This task is distinguished by being very challenging for computers but very
+easy for humans, because of the extent that it relies on implicit, common sense
+knowledge. Most systems that have been evaluated on the Story Cloze Test
+score only marginally above the random baseline of 50\%, while a typical
+human agrees with the gold standard answers 100\% of the time.
 
-% Sometimes this alignment involves using extra information that
-% incidentally comes with the data. To include WordNet, we need to assign
-% each synset a primary label that will be used in its semantic relations,
-% and then link other synonyms in the set to that label using the
-% \emph{Synonym} relation. In WordNet RDF 3.1, the labels are unordered,
-% although some terms are more appropriate as primary labels than others.
-% Fortunately, WordNet RDF 2.0, which is linked to the current WordNet RDF
-% 3.1 with \texttt{owl\#SameAs} links, also assigned primary labels to
-% synsets by putting these labels in their URIs. So when the synset at
-% http://wordnet-rdf.princeton.edu/wn31/100028005-n is linked to
-% http://www.w3.org/2006/03/wn/wn20/instances/synset-shape-noun-2, we
-% conclude that its primary label is ``shape''. This is one of many
-% heuristics that are tried when importing WordNet synsets into
-% ConceptNet.
+Our preliminary attempt to apply ConceptNet Numberbatch to the Story Cloze Test
+is to use a very simple ``bag-of-vectors'' model, simply averaging the
+embeddings of the words in the sentence and choosing the ending whose average is
+closest. This allows us to compare directly to one of the original results presented by
+\citeauthor{mostafazadeh2016cloze}, in which a bag of vectors using GenSim's
+implementation of word2vec scores 53.9\% on the test set.
+
+This bag-of-vectors model uses no knowledge of how one event might sensibly
+follow from another, only which words are related in context. Improving the
+score of this model should not be portrayed as actual ``story understanding'',
+but it shows that we can recognize that sensible stories do not suddenly change
+topic.
+
+\section{Results and discussion}
+\begin{figure}
+\centering
+\includegraphics[width=3.3in]{eval-graph.png}
+\caption{
+    Performance across multiple evaluations of word embeddings built from
+    ConceptNet, compared to other public word embeddings. Error bars
+    show 95\% confidence intervals.
+}
+\label{eval-results}
+\end{figure}
+
+\section{Availability of this code and data}
+
+The code for building and evaluating ConceptNet and its embeddings is part of
+the ConceptNet 5 codebase, developed at \url{http://github.com/commonsense/conceptnet5}.
+The version that produced this paper has been archived on the research repository
+Zenodo at [FIXME]. The output embeddings, ConceptNet Numberbatch 2016.09, are similarly
+archived at [FIXME].
+
+\section{Acknowledgments}
 
 \bibliographystyle{aaai}
 \bibliography{conceptnet-paper}
