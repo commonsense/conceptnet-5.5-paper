@@ -7,6 +7,7 @@
 
 % Packages added by Rob
 % Also: grffile, latexsym, textcomp, longtable, booktabs, amsmath, amsfonts, amssymb?
+\usepackage{amsmath}
 \usepackage[utf8]{inputenc}
 \usepackage{url}
 \usepackage{graphicx}
@@ -24,26 +25,24 @@
 \setcounter{secnumdepth}{0}
 \begin{document}
 
-\title{ConceptNet 5.5: An Open Multilingual Knowledge Graph about Natural Language}
-\author{Robert Speer\\ Luminoso Technologies, Inc.}
+\title{ConceptNet 5.5: An Open Multilingual Graph of General Knowledge}
+\author{
+    Robert Speer \\ Luminoso Technologies, Inc. \\ 675 Massachusetts Ave. \\ Cambridge, MA 02139
+    \And
+    Joshua Chin \\ Union College \\ 807 Union St. \\ Schenectady, NY 12308
+}
 
 \maketitle
 
 
 \section{Abstract}\label{abstract}
 
-ConceptNet is a knowledge graph that connects words and phrases of
-natural language with labeled edges. It is designed to improve natural
-language applications by allowing the application to better understand
-the meanings behind the words people use. Version 5.5 extends its
-representation to include word forms in many languages.
+Machine learning about language can be improved by supplying it with specific knowledge and sources of external information. We present here a new version of the linked open data resource ConceptNet that is particularly well suited to be used with modern NLP techniques such as word embeddings.
 
-ConceptNet provides applications with understanding that they would not acquire
-from distributional semantics (such as word2vec) alone, nor from narrower
-resources such as WordNet or DBPedia. We demonstrate this with state-of-the-art
-results on intrinsic evaluations (word relatedness and analogies) that
-translate into improvements on an extrinsic evaluation in story understanding
-(the Story Cloze Test).
+ConceptNet is a knowledge graph that connects words and phrases of natural language with labeled edges. Its knowledge is collected from many sources that include expert-created resources, crowd-sourcing, and games with a purpose. It is designed to represent the general knowledge involved in understanding language, improving natural language applications by allowing the application
+to better understand the meanings behind the words people use.
+
+When ConceptNet is combined with word embeddings acquired from distributional semantics (such as word2vec), it provides applications with understanding that they would not acquire from distributional semantics alone, nor from narrower resources such as WordNet or DBPedia. We demonstrate this with state-of-the-art results on intrinsic evaluations of word relatedness that translate into improvements on applications of word vectors, including solving SAT-style analogies.
 
 
 \section{Introduction}\label{introduction}
@@ -57,13 +56,54 @@ describes the release of ConceptNet 5.5, which has expanded to include
 lexical and world knowledge from many different sources in many
 languages.
 
-[...]
+ConceptNet represents relations between words such as:
 
-In this paper, we will concisely represent an assertion as a triple of
-its start node, relation label, and end node: the assertion that ``a dog
-has a tail'' can be represented as (\emph{dog}, \emph{HasA},
-\emph{tail}).
+\begin{itemize}
+    \item \emph{Fire} is \emph{hot}.
+    \item A \emph{dog} has a \emph{tail}.
+    \item A \emph{net} is used for \emph{catching fish}.
+    \item ``\emph{Leaves}'' is a form of the word ``\emph{leaf}''.
+    \item The word \emph{cold} in English is \emph{studený} in Czech.
+    \item Um \emph{alimento} é usado para \emph{comer} [Food is used for eating].
+\end{itemize}
 
+In this paper, we will concisely assertions such as the above as triples of
+their start node, relation label, and end node: the assertion that ``a dog has
+a tail'' can be represented as (\emph{dog}, \emph{HasA}, \emph{tail}).
+
+It also represents links between knowledge resources. In addition to its own
+knowledge about the English term \emph{astronomy}, for example, ConceptNet
+contains links to URLs that define \emph{astronomy} in WordNet, Wiktionary,
+UMBEL, and DBPedia.
+
+The graph-structured knowledge in ConceptNet can be particularly useful to NLP
+learning algorithms, particularly those based on word embeddings, such as
+\cite{mikolov2013word2vec}. We can use ConceptNet to build semantic spaces that
+are more effective than distributional semantics alone.
+
+The most effective semantic space is one that learns from both distributional
+semantics and ConceptNet, using a generalization of the ``retrofitting'' method
+\cite{faruqui2015retrofitting}. We call this hybrid semantic space ``ConceptNet
+Numberbatch'', to clarify that it is a separate artifact from ConceptNet
+itself.
+
+ConceptNet Numberbatch performs significantly better than other systems across
+many evaluations of word relatedness, and this increase in performance
+translates to improvements on downstream tasks such as analogies.  On Turney's
+corpus of SAT-style analogy questions \cite{turney2005lra}, its accuracy of
+56.4\% is slightly higher than the previous best system (Turney's LRA) and only
+slightly lower than the performance of the average human test-taker.
+
+Building word embeddings is not the only application of ConceptNet, but it is a
+way to apply ConceptNet that achieves clear benefits and is compatible with
+ongoing research in distributional semantics. This shows the continued relevance of
+ConceptNet, and of explicitly collecting knowledge to improve the computational
+understanding of semantics.
+
+In this paper, we will begin by describing ConceptNet 5.5 and its features,
+show how to use ConceptNet alone as a semantic space and a measure of word
+relatedness, and then proceed to describe and evaluate the hybrid system
+ConceptNet Numberbatch on these various semantic tasks.
 
 \section{Structure of ConceptNet}\label{structure-of-conceptnet}
 
@@ -93,7 +133,8 @@ ConceptNet 5.5 is built from the following sources:
 \item
   OpenCyc \cite{matuszek2006cyc}, a hierarchy of hypernyms provided by
   Cyc, a system that represents common sense knowledge in predicate
-  logic
+  logic, and includes connections to the UMBEL ontology
+  \cite{bergman2008umbel}
 \item
   A subset of DBPedia \cite{auer2007dbpedia}, a network of facts
   extracted from Wikipedia infoboxes
@@ -189,11 +230,11 @@ assertions above are now linked by the third assertion (\emph{driving},
 \emph{FormOf}, \emph{drive}), and both ``driving'' and ``drive'' can be looked
 up in ConceptNet.
 
-One English-specific normalization remains, because English terms are
-more likely to come from free text than other languages. A small set of
-stopwords is removed from all English terms: ``a'', ``an'', ``the'', and
-as the first word of a term, ``to''. Removing other stopwords is left up
-to the importer for a particular data source.
+One English-specific normalization remains, because English terms are more
+likely to come from free text than other languages. A small set of stopwords is
+removed from all English terms: ``a'', ``an'', ``the'', and as the first word
+of a term, ``to''. Removing other stopwords is an option left up to the
+importer for a particular data source.
 
 
 \subsection{Vocabulary}\label{vocabulary}
@@ -246,31 +287,14 @@ sources provide information about parts of speech, allowing us to use
 this as a common representation that provides a small amount of
 disambiguation.
 
-We have experimented with further disambiguating individual word senses,
-as in \texttt{/c/en/lead/n/metal}, following up on work that showed that
-word senses can be disambiguated by finding the best match to nearby
-words on features including ConceptNet \cite{havasi2010coarse}.
-
-However, we have not found a satisfying way to include a vocabulary of
-word senses in ConceptNet, as there is no currently standardized
-vocabulary of word senses. Resources that distinguish word senses, such
-as WordNet, Wiktionary, and to some extent DBPedia, each use their own
-resource-specific vocabulary of word senses. Mappings between these
-various vocabularies exist \cite{miller2014alignment}, but they are a
-topic of ongoing research which has not produced a stable target for
-word sense disambiguation.
-
-In ConceptNet, we tried including these
-disambiguations in resource-specific namespaces (such as
-\texttt{/c/en/lead/n/wp/electronics} for the sense of ``lead''
-disambiguated as ``Electronics'' on the English Wikipedia), which would
-be linked to their parent terms by \emph{SenseOf} relations. We
-ultimately chose not to include these disambiguations in ConceptNet
-because they decreased its performance on intrinsic evaluations of word
-similarity. The confusion created by undisambiguated words was not as
-bad as the sparsity created by unaligned word senses. So we have settled
-on disambiguating only the part of speech, which is also the representation
-of word senses targeted by the sense2vec system \cite{trask2015sense2vec}.
+We have experimented with further disambiguating individual word senses, as in
+\texttt{/c/en/lead/n/metal}, following up on work that showed that word senses
+can be disambiguated by finding the best match to nearby words on features
+including ConceptNet \cite{havasi2010coarse}. However, we have not found a
+satisfying vocabulary of distinct word senses to use for this purpose. So far,
+we have settled for disambiguating only the part of speech, which is also the
+representation of word senses targeted by the \emph{sense2vec} system
+\cite{trask2015sense2vec}.
 
 
 \subsection{Tracking the provenance of knowledge}\label{provenance}
@@ -324,13 +348,15 @@ we know it for multiple reasons.
 \section{Related work}
 
 % WordNet
+% NELL
 % Freebase / Google Knowledge Graph
 % DBPedia
 % Retrofitting
 % word2vec
 % GloVe
 % Levy, Hyperwords
-
+% LRA
+% BagPack
 
 \section{Applying ConceptNet to Word Embeddings}
 \label{applying-conceptnet-to-word-embeddings}
@@ -387,7 +413,93 @@ order similarity terms into the vectors. $l1$-normalizing the columns can be
 seen as weighing each dimension by their sparsity.
 
 \subsection{Combining ConceptNet with distributional word embeddings}
-% Expanded retrofitting and redecomposition
+
+Retrofitting \cite{faruqui2015retrofitting} is a process that adjusts an
+existing matrix of word embeddings using a knowledge graph. Briefly, retrofitting
+infers new vectors $q_i$ with the objective of being close to their original
+values, $\hat{q_i}$, and also close to their neighbors in the graph with edges $E$,
+by minimizing this objective function:
+$$\Psi(Q) = \sum_{i=1}^{n}\left[
+    \alpha_i \lVert q_i - \hat{q_i} \rVert ^2 + \sum_{(i, j) \in E} \beta_{ij} \lVert q_i - q_j \rVert ^2
+\right] $$
+
+\citeauthor{faruqui2015retrofitting} give a simple iterative process to minimize
+this function over the vocabulary of the original embeddings.
+
+The process of ``expanded retrofitting'', first described in
+\cite{speer2016ensemble}, can optimize this objective over a larger vocabulary,
+including terms from the knowledge graph that do not appear in the vocabulary
+of the word embeddings. This effectively sets $\alpha_i = 0$ for terms whose
+original values are undefined. The particular benefit of expanded retrofitting
+to ConceptNet is that it can benefit from the multilingual connections in
+ConceptNet. It learns more about English words via their translations in other
+languages, and gives these foreign-language terms embeddings in the same space
+as the English terms.
+
+We add one more step to retrofitting, which is to subtract the mean of the
+vectors that result from retrofitting, then re-normalize them to unit vectors.
+Retrofitting has a tendency to move all vectors closer to the vectors for
+highly-connected terms such as ``person''. Subtracting the mean helps to ensure
+that terms remain distinguishable from each other.
+
+\subsection{Combining multiple sources of embeddings}
+
+Retrofitting can be applied to any existing matrix of word embeddings, without
+needing access to the data that was used to train them. This is particularly
+useful because it allows building on publicly-released matrices of embeddings
+whose input data is unavailable or difficult to acquire.
+
+Two prominent matrices of embeddings are the word2vec embeddings trained on 100
+billion words of Google News using skip-grams with negative sampling
+\cite{mikolov2013word2vec}, and the GloVe 1.2 embeddings trained on 840 billion
+words of the Common Crawl \cite{pennington2014glove}. These matrices represent
+somewhat different domains of text and have complementary strengths, and the
+way that we can benefit from them the most is by taking both of them as input.
+
+We first learn a separate matrix of embeddings from the combination of each
+input matrix and the pruned ConceptNet graph, using expanded retrofitting. We
+align the results and concatenate their columns, and then project these
+concatenated columns into a smaller set of features using truncated SVD. The
+truncated SVD allows us to produce more compact (300-dimensional) embeddings,
+mitigate redundant features, and infer compatible embeddings for terms that
+are missing from one of the vocabularies. For details of this process, we
+refer to the \texttt{conceptnet5.vectors.merge} module in the ConceptNet 5.5
+codebase.
+
+%% Cut this because it was too detailed to fit in the paper
+% We then concatenate the columns of the retrofit matrices, aligning them on the
+% intersection of their vocabularies, which means that at this step, only terms
+% that appear in all of the retrofit matrices get embeddings. This includes all
+% terms in the pruned ConceptNet graph plus some additional terms.
+
+% Concatenating these matrices provides some redundant information, so our next
+% step is to represent the concatenation more compactly. We factor the
+% concatenated matrix $A$ into $A = U \Sigma V^T$ using SVD, so that U and V are
+% orthogonal matrices and $\Sigma$ is a diagonal matrix of singular values.  We
+% truncate the SVD results to keep only the 300 largest singular values and their
+% corresponding vectors, giving the truncated matrices $U'$, $\Sigma'$, and $V'$.
+% $U'$ projects our vocabulary of terms into these 300 components, while $V'$ projects
+% the concatenated embeddings into the same 300 components.
+
+% We can now use $V'$ to infer vectors in this space for more terms, including terms that were not
+% in the intersection of vocabularies. We concatenate the input matrices once again, but
+% this time we keep a larger vocabulary and set missing entries to 0. We multiply this
+% matrix by $V'$, and because $V'$ is orthogonal, this gives the equivalent of $U'\Sigma'$ on
+% the expanded vocabulary.
+
+% Finally, we compensate for the fact that the columns of the input matrices can contain
+% overlapping, redundant information about the words.
+% We multiply our result by $\Sigma'^{-1/2}$, which scales down the larger singular values that
+% represent the most correlated features. The result represents $U'\Sigma'^{1/2}$, which
+% incidentally is the same form as Levy's high-performing embeddings built from the
+% SVD of word co-occurrences \cite{levy2015embeddings}.
+
+In this paper, we use this retrofitting-and-merging process on only the
+word2vec and GloVe embeddings. We do not include ConceptNet-PPMI as an input
+because ConceptNet is already represented in the retrofitting process. As an
+avenue for future expansion, we are experimenting with including distributional
+word embeddings from corpora of non-English text. Preliminary results show that
+this improves the multilingual performance of the embeddings.
 
 \section{Evaluation methods}
 
@@ -435,22 +547,9 @@ out some test data until it was time to include results in this paper:
 \item
     We did not use MTurk-771 in development, holding out the entire set
     as a final test, showing that ConceptNet Numberbatch performs well on a
-    previously-unseen vocabulary.
+    previously-unseen evaluation.
 \end{itemize}
 
-
-[...]
-
-Previous work that combines ConceptNet in an ensemble with other word
-embeddings \cite{speer2016ensemble} has included a time-consuming step of
-unifying the vocabularies of multiple resources and interpolating what the
-missing word embeddings should be. With ConceptNet 5.5, we found this
-unnecessary.  The vocabulary of ConceptNet 5.5 is sufficient to cover all but
-four words that appear anywhere in the English test data.\footnote{We are
-content to return zero-vectors for the four out-of-vocabulary words, which are
-``amazings'', ``internationaler'', ``liverpools'', and ``discoverys''. All of
-these are from the Rare Words evaluation, and are probably the result of
-imperfect machine-generation of examples.}
 
 \subsection{Intrinsic evaluations of analogies}
 
