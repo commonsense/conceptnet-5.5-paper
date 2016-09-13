@@ -261,7 +261,7 @@ broader ecosystem of Linked Open Data.
 \section{Related Work}
 
 % TODO: this whole section
-[...]
+[TODO]
 
 % Existing knowledge resources: WordNet, DBPedia, Freebase / Google Knowledge Graph
 % Previous publications of ConceptNet
@@ -282,7 +282,7 @@ of a machine learning task, such as predicting a word in a sentence from its nei
 
 \section{Applying ConceptNet to Word Embeddings}
 
-\subsection{ConceptNet as a PPMI Matrix}
+\subsection{Computing ConceptNet Embeddings Using PPMI}
 
 We can calculate word embeddings directly from the ConceptNet graph by converting
 it into a matrix of its positive pointwise mutual information (PPMI), and then
@@ -290,51 +290,47 @@ reducing its dimensionality using truncated singular value decomposition (SVD).
 This is similar to, but more effective than, a previous matrix representation of
 ConceptNet that applied SVD directly without PPMI \cite{speer2008analogyspace}.
 
-We represent the ConceptNet graph as a sparse, symmetric term-term matrix $M$.
+The process we apply largely follows the practical recommendations of
+\citeauthor{levy2015embeddings} \shortcite{levy2015embeddings}, including a
+number of normalizations and parameters that may appear ad-hoc. Levy et al.~use
+this sequence of steps (PPMI, with context distributional smoothing, followed
+by truncated SVD) to build a high-quality system of word embeddings from
+Wikipedia text. We find that nearly the same steps work well when applied to
+terms and their neighbors in ConceptNet, instead of to words and their contexts
+in a corpus.
+
+We begin by representing the ConceptNet graph as a sparse, symmetric term-term matrix $M$.
 Each cell contains the sum of the weights of all edges that connect the two
 corresponding terms. For performance reasons, when building this matrix, we
 prune the fringe of the ConceptNet graph, discarding terms connected to fewer
 than three edges.
 
-We convert this sparse co-occurrence graph to dense embeddings following the
-recommendations of  
-\citeauthor{levy2015embeddings} \shortcite{levy2015embeddings}. As recommended
-there, we apply PPMI with context distributional smoothing ($\alpha=0.75$),
-which discounts the impact of poorly-connected terms. The resulting matrix
-$M^\text{PPMI}$ can be computed as:
+We apply PPMI with context distributional smoothing ($\alpha=0.75$), giving the
+sparse matrix $M^\mathrm{PPMI}$. We then use truncated SVD to find a dense, rank-$d$
+approximation to this large sparse matrix. The truncated SVD factors this
+matrix as $M^\mathrm{PPMI} \approx U \Sigma V^T$, where $U$ and $V$ are orthogonal $N
+\times d$ matrices and $\Sigma$ is a $d \times d$ diagonal matrix. We set $d =
+300$, similarly to some other word-embedding systems.
 
-$$
-M^\text{PPMI}_{ij} =
-\log \frac
-  {\hat{P} \left(i, j\right)}
-  {\hat{P} \left(i\right) \hat{P_\alpha} \left(j\right)}
-;
-\hat{P_\alpha} \left(j\right) =
-\frac
-  {\left(\sum_i{M_{ij}}\right)^{0.75}}
-  {\sum_k{\left(\sum_i{M_{ik}}\right)^{0.75}}}
-$$
+Our own normalization that we have found to be effective is to re-scale the
+columns of $U$ and $V$ by dividing by their $L_1$ norm, emphasizing components
+that distinguish sparse sets of concepts. This gives the transformed word and
+context embeddings $U'$ and $V'$, which are no longer orthogonal matrices.
 
-We then use truncated SVD to find a dense, rank-$d$ approximation to
-this large sparse matrix. The truncated SVD factors $M$ as $M \approx U \Sigma
-V^T$, where $U$ and $V$ are orthogonal $N \times d$ matrices and $\Sigma$ is a
-$d \times d$ diagonal matrix. We set $d = 300$, similarly to some other
-word-embedding systems.
+Following \citeauthor{levy2015embeddings}, we combine the terms and their
+contexts symmetrically into a single set of embeddings that can represent
+multi-step connections between terms: $E = (U' + V')\Sigma^{1/2}$. The rows of
+this matrix, re-normalized to unit vectors, are the embeddings of nodes in
+ConceptNet in a representation we call ConceptNet-PPMI.
 
-This factorization is the optimal rank-$d$ approximation to the sparse matrix,
-according to the $L_2$ loss in reconstructing the matrix. However, there is
-further smoothing we will apply, because our goal is not to reconstruct a PPMI
-matrix, but to produce embeddings that are effective for comparing word
-meanings.
-
-Our own normalization that we have found to be effective is that we re-scale
-the columns of $U$ and $V$ by dividing by their $L_1$ norm, emphasizing
-components that distinguish sparse sets of concepts. This gives the transformed
-word and context embeddings $U'$ and $V'$, which are no longer orthogonal
-matrices. Following \citeauthor{levy2015embeddings}, we then compute $(U +
-V)\Sigma^{1/2}$ as our final word embeddings, combining each word with its
-context to promote second-order relationships between terms. This produces
-a matrix of word embeddings purely from ConceptNet that we call ConceptNet-PPMI.
+The process for calculating ConceptNet-PPMI is baroque, but what it represents
+can be intuitive. These embeddings implicitly represent the overall graph
+structure of ConceptNet, and allow us to compute the approximate connectedness
+of any pair of nodes. Nodes are strongly connected when they are connected by
+short paths of edges, possibly many such paths, with high weights. They are
+weakly connected when one must traverse long or low-weight paths of edges to
+get between them. When the dot product of terms in ConceptNet-PPMI is high, it
+means they are strongly connected in ConceptNet.
 
 \subsection{Combining ConceptNet with Distributional Word Embeddings}
 
@@ -576,7 +572,7 @@ Rare Words ($\rho$)            & .603 & .578 & .596 \\
 MTurk-771 ($\rho$)             & ---- & .804 & .804 \\
 WordSim-353 ($\rho$)           & .827 & ---- & .827 \\
 Story Cloze Test (acc)         & .604 & .595 & .595 \\
-SAT Analogies (acc)            & .545 & .583 & .564 
+SAT Analogies (acc)            & .545 & .583 & .564
 \end{tabular}
 \caption{The Spearman correlation ($\rho$) or accuracy (acc) of ConceptNet Numberbatch 16.09, our hybrid system,
 on data used in development and data held out for testing.}
