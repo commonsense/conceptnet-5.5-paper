@@ -526,7 +526,7 @@ score only marginally above the random baseline of 50\%, while a typical
 human agrees with the gold standard answers 100\% of the time.
 
 Our preliminary attempt to apply ConceptNet Numberbatch to the Story Cloze Test
-is to use a very simple ``bag-of-vectors'' model, simply averaging the
+is to use a very simple ``bag-of-vectors'' model, by averaging the
 embeddings of the words in the sentence and choosing the ending whose average is
 closest. This allows us to compare directly to one of the original results presented by
 \citeauthor{mostafazadeh2016cloze}, in which a bag of vectors using GenSim's
@@ -535,11 +535,10 @@ implementation of word2vec scores 53.9\% on the test set.
 This bag-of-vectors model uses no knowledge of how one event might sensibly
 follow from another, only which words are related in context. Improving the
 score of this model should not be portrayed as actual ``story understanding'',
-but it shows that we can recognize that sensible stories do not suddenly change
-topic.
+but it recognizes that sensible stories do not suddenly change topic.
 
 \section{Results}
-\begin{figure}
+\begin{figure}[t]
 \centering
 \includegraphics[width=3.3in]{eval-graph.pdf}
 \caption{
@@ -550,11 +549,27 @@ topic.
 \label{eval-results}
 \end{figure}
 
+\begin{table}[t]
+\centering
+\begin{tabular}{lrrr}
+\bf Evaluation     & \bf Dev & \bf Test & \bf Final \\
+\hline
+MEN-3000 ($\rho$)              & .853 & .861 & .861 \\
+Rare Words ($\rho$)            & .603 & .578 & .596 \\
+MTurk-771 ($\rho$)             & ---- & .804 & .804 \\
+WordSim-353 ($\rho$)           & .827 & ---- & .827 \\
+Story Cloze Test (acc)         & .604 & .595 & .595 \\
+SAT Analogies (acc)            & .545 & .583 & .564 
+\end{tabular}
+\caption{The Spearman correlation ($\rho$) or accuracy (acc) of ConceptNet Numberbatch 16.09, our hybrid system,
+on data used in development and data held out for testing.}
+\end{table}
+
 Figure~\ref{eval-results} compares the performance of the systems we compared
 across all evaluations. For word-relatedness evaluations, the Y-axis represents
 the Spearman correlation ($\rho$), using the Fisher transformation to compute a
-95\% confidence interval that assumes the given word pairs are sampled from a
-larger unobservable set \cite{bonett2000sample}. For the analogy and story evaluations,
+95\% confidence interval that assumes the given word pairs are sampled from an
+unobservable larger set \cite{bonett2000sample}. For the analogy and story evaluations,
 the Y-axis is simply the proportion of questions answered correctly, with 95\%
 confidence intervals calculated using the binomial exact test.
 
@@ -568,7 +583,7 @@ the Rare Words dataset and the crowd-sourced MEN-3000 and MTurk-771 datasets
 shows both the breadth and the depth of its understanding of words.
 
 ConceptNet Numberbatch also performed the best at SAT analogies, getting 56.4\%
-of the questions correct (57.0\% on the half that was held out for final
+of the questions correct (58.3\% on the half that was held out for final
 testing), with a 95\% confidence interval of 51.4\%--61.4\%.
 This compares to LRA \cite{turney2005lra}, which scored 56.1\% and was
 allowed to search AltaVista during the evaluation, as well as the previous best
@@ -579,7 +594,7 @@ said by Turney and Littman to be 57.0\%.
 The performance of our system on the Story Cloze Test was acceptable but
 unremarkable.  ConceptNet Numberbatch chose the correct ending 59.5\% of the
 time, which is in fact slightly better than any results reported by
-\citeauthor{mostafazadeh2016cloze} \citeyear{mostafazadeh2016cloze}, including
+\citeauthor{mostafazadeh2016cloze} \shortcite{mostafazadeh2016cloze}, including
 neural nets trained on the task. However, we could also achieve a similar score
 by using the same bag-of-vectors approach on other word embeddings. The best
 score of 59.9\% was achieved by LexVec, with Numberbatch, GloVe, and word2vec
@@ -587,9 +602,10 @@ all within its margin of error.
 
 The precise scores of our system on all these evaluations appear in
 Table~\ref{eval-table}, including a development/test breakdown that shows no
-noticeable overfitting.
+noticeable overfitting. The ``Final'' column is meant for comparisons to other
+papers; it uses the standard test set if it exists, or all of the data
+otherwise.
 
-% TODO: evaluation table
 
 \subsection{Discussion of Results}
 
@@ -645,9 +661,8 @@ convenient form that can be applied across many domains and many languages.
 
 The code for building and evaluating ConceptNet and its embeddings is part of
 the ConceptNet 5 codebase, developed at \url{http://github.com/commonsense/conceptnet5}.
-The version that produced this paper has been archived on the research repository
-Zenodo at [FIXME]. The output embeddings, ConceptNet Numberbatch 2016.09, are similarly
-archived at [FIXME].
+The output embeddings, ConceptNet Numberbatch 16.09, are archived on the research
+repository Zenodo at [FIXME].
 
 \section{Acknowledgments}
 

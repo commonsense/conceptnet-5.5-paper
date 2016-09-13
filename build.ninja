@@ -3,4 +3,4 @@ PDFLATEX = pdflatex -shell-escape
 rule build_latex
   command = $PDFLATEX conceptnet-paper && bibtex conceptnet-paper && $PDFLATEX conceptnet-paper && $PDFLATEX conceptnet-paper && $PDFLATEX conceptnet-paper || rm conceptnet-paper.pdf conceptnet-paper.bbl
 
-build conceptnet-paper.pdf: build_latex conceptnet-paper.tex | conceptnet-paper.bib
+build conceptnet-paper.pdf: build_latex conceptnet-paper.tex | conceptnet-paper.bib eval-graph.pdf
