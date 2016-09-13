@@ -265,55 +265,6 @@ As ConceptNet terms can also be given absolute URLs (by prefixing their local
 URI with the domain name \url{http://api.conceptnet.io}), this allows
 ConceptNet to participate in the broader ecosystem of Linked Open Data.
 
-\subsection{Tracking the provenance of knowledge}\label{provenance}
-% This section might be cut
-
-Each assertion contains extra data for tracking the provenance of the
-knowledge it contains, which is used to find systematic errors and bad
-contributions. Sources are represented by URIs and divided into multiple
-types. The prefix \texttt{/s/contributor} represents individual people
-who contributed knowledge to OMCS or one of its sister projects.
-\texttt{/s/activity} represents what a contributor was doing when they
-contributed the knowledge, such as responding to a prompt or playing a
-game with a purpose. \texttt{/s/resource} represents an existing
-knowledge resource, such as WordNet or Wiktionary. \texttt{/s/process}
-represents a process for transforming knowledge, such as the Wiktionary
-parser or a rule for fixing the parsing of prepositions in OMCS.
-
-The provenance of an assertion is a set of sets of sources. The inner
-sets indicate multiple sources that were used together to create the
-assertion: for example, a contributor, an activity, and a process may
-all be involved in collecting one assertion. Each inner set of sources
-contributes some amount of weight to the assertion. This number is
-provided by the import scripts for each knowledge source, which are
-asked to estimate the reliability of each assertion they produce.
-
-The outer set represents sources that separately provided the same
-assertion. When there are multiple separate sources, they add their
-weights together, indicating that the assertion is more reliable because
-we know it for multiple reasons.
-
-
-% \subsection{The use-mention distinction}
-
-% ConceptNet does not strictly enforce the use-mention distinction. Some
-% of its assertions, such as (\emph{cat}, \emph{IsA}, \emph{animal}),
-% relate the meanings of the words as they are used, while others, such as
-% (\emph{cat}, \emph{DerivedFrom}, \emph{cattus}), mention the words as
-% objects in themselves. However, it is intended that all relations,
-% including these ``mention'' relations, informatively represent something
-% about the meanings of the words. The etymology of a word, as indicated
-% by the \emph{DerivedFrom} or \emph{EtymologicallyRelatedTo} relations,
-% is often a clue to its meaning.
-
-% Unacceptable assertions would include (\emph{cat}, \emph{HasA},
-% \emph{three letters}) or (\emph{noon}, \emph{IsA}, \emph{palindrome}).
-% Sometimes these appear in data sources, particularly games with a
-% purpose, whose players are tempted to use wordplay to achieve their
-% goals. The code that imports data from the word game Verbosity
-% heuristically detects wordplay, and mentions of words as words, so that
-% it can filter them out.
-
 \section{Related work}
 
 % TODO: this whole section
@@ -439,34 +390,6 @@ mitigate redundant features, and infer compatible embeddings for terms that
 are missing from one of the vocabularies. For details of this process, we
 refer to the \texttt{conceptnet5.vectors.merge} module in the ConceptNet 5.5
 codebase.
-
-%% Cut this because it was too detailed to fit in the paper
-% We then concatenate the columns of the retrofit matrices, aligning them on the
-% intersection of their vocabularies, which means that at this step, only terms
-% that appear in all of the retrofit matrices get embeddings. This includes all
-% terms in the pruned ConceptNet graph plus some additional terms.
-
-% Concatenating these matrices provides some redundant information, so our next
-% step is to represent the concatenation more compactly. We factor the
-% concatenated matrix $A$ into $A = U \Sigma V^T$ using SVD, so that U and V are
-% orthogonal matrices and $\Sigma$ is a diagonal matrix of singular values.  We
-% truncate the SVD results to keep only the 300 largest singular values and their
-% corresponding vectors, giving the truncated matrices $U'$, $\Sigma'$, and $V'$.
-% $U'$ projects our vocabulary of terms into these 300 components, while $V'$ projects
-% the concatenated embeddings into the same 300 components.
-
-% We can now use $V'$ to infer vectors in this space for more terms, including terms that were not
-% in the intersection of vocabularies. We concatenate the input matrices once again, but
-% this time we keep a larger vocabulary and set missing entries to 0. We multiply this
-% matrix by $V'$, and because $V'$ is orthogonal, this gives the equivalent of $U'\Sigma'$ on
-% the expanded vocabulary.
-
-% Finally, we compensate for the fact that the columns of the input matrices can contain
-% overlapping, redundant information about the words.
-% We multiply our result by $\Sigma'^{-1/2}$, which scales down the larger singular values that
-% represent the most correlated features. The result represents $U'\Sigma'^{1/2}$, which
-% incidentally is the same form as Levy's high-performing embeddings built from the
-% SVD of word co-occurrences \cite{levy2015embeddings}.
 
 In this paper, we use this retrofitting-and-merging process on the
 word2vec and GloVe embeddings. We do not include ConceptNet-PPMI as an input
