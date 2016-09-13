@@ -205,12 +205,6 @@ assertions above are now linked by the third assertion (\emph{driving},
 \emph{FormOf}, \emph{drive}), and both ``driving'' and ``drive'' can be looked
 up in ConceptNet.
 
-One English-specific normalization remains, because English terms are more
-likely to come from free text than other languages. A small set of stopwords is
-removed from all English terms: ``a'', ``an'', ``the'', and as the first word
-of a term, ``to''. Removing other stopwords is an option left up to the
-importer for a particular data source.
-
 
 \subsection{Vocabulary}\label{vocabulary}
 
@@ -242,7 +236,7 @@ We have experimented with further disambiguating individual word senses, as in
 \texttt{/c/en/lead/n/metal}, following up on work that showed that word senses
 can be disambiguated by finding the best match to nearby words on features
 including ConceptNet \cite{havasi2010coarse}. However, we have not found a
-satisfying vocabulary of distinct word senses to use for this purpose. So far,
+stable vocabulary of distinct word senses to use for this purpose. So far,
 we have settled for disambiguating only the part of speech, which is also the
 representation of word senses targeted by the \emph{sense2vec} system
 \cite{trask2015sense2vec}.
@@ -256,14 +250,12 @@ many-to-many alignment.
 
 A term that is imported from another knowledge graph will be connected to
 ConceptNet nodes via the pseudo-relation \texttt{ExternalURL}, pointing to an
-absolute URL that represents that term in that external resource. (This is
-similar in spirit to the OWL \texttt{sameAs} relation, but \texttt{sameAs} is
-not suited for a many-to-many mapping because it is supposed to be an
-equivalence relation, including being transitive.) This preserves the
-provenance of the data and enables looking up what the untransformed data was.
-As ConceptNet terms can also be given absolute URLs (by prefixing their local
-URI with the domain name \url{http://api.conceptnet.io}), this allows
-ConceptNet to participate in the broader ecosystem of Linked Open Data.
+absolute URL that represents that term in that external resource.  This
+preserves the provenance of the data and enables looking up what the
+untransformed data was.  As ConceptNet terms can also be given absolute URLs
+(by prefixing their local URI with the domain name
+\url{http://api.conceptnet.io}), this allows ConceptNet to participate in the
+broader ecosystem of Linked Open Data.
 
 \section{Related work}
 
