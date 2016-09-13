@@ -58,7 +58,8 @@ ConceptNet represents relations between words such as:
     \item A \emph{net} is used for \emph{catching fish}.
     \item ``\emph{Leaves}'' is a form of the word ``\emph{leaf}''.
     \item The word \emph{cold} in English is \emph{studený} in Czech.
-    \item Um \emph{alimento} é usado para \emph{comer} [Food is used for eating].
+        % TODO: this might not be good Portuguese
+    \item O \emph{alimento} é usado para \emph{comer} [Food is used for eating].
 \end{itemize}
 
 In this paper, we will concisely assertions such as the above as triples of
@@ -488,13 +489,13 @@ This gives us three components that we can weigh to evaluate whether a pair
 $b_1$, the dot product of differences between the pairs, and the dot product of
 differences between the transposed pairs.  The total weight does not matter, so
 we can put these together into a vector equation with two free parameters:
-\begin{equation}
+\begin{equation*}
     \begin{split}
         s &= a_1 \cdot a_2 + b_1 \cdot b_2\\
-          &  + w_1(b_2 - a_2) \cdot (b_1 - a_1)\\
-          &  + w_2(b_2 - b_1) \cdot (a_2 - a_1)
+          &  + w_1(b_2 - a_2) \cdot (b_1 - a_1)
+             + w_2(b_2 - b_1) \cdot (a_2 - a_1)
     \end{split}
-\end{equation}
+\end{equation*}
 
 The appropriate values of $w_1$ and $w_2$ depend on the nature of the
 relationships in the analogy questions, and also on how these relationships
