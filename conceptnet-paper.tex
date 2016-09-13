@@ -26,11 +26,7 @@
 \begin{document}
 
 \title{ConceptNet 5.5: An Open Multilingual Graph of General Knowledge}
-\author{
-    Robert Speer \\ Luminoso Technologies, Inc. \\ 675 Massachusetts Ave. \\ Cambridge, MA 02139
-    \And
-    Joshua Chin \\ Union College \\ 807 Union St. \\ Schenectady, NY 12308
-}
+\author{Author list withheld for blind review}
 
 \maketitle
 
@@ -39,8 +35,7 @@
 
 Machine learning about language can be improved by supplying it with specific knowledge and sources of external information. We present here a new version of the linked open data resource ConceptNet that is particularly well suited to be used with modern NLP techniques such as word embeddings.
 
-ConceptNet is a knowledge graph that connects words and phrases of natural language with labeled edges. Its knowledge is collected from many sources that include expert-created resources, crowd-sourcing, and games with a purpose. It is designed to represent the general knowledge involved in understanding language, improving natural language applications by allowing the application
-to better understand the meanings behind the words people use.
+ConceptNet is a knowledge graph that connects words and phrases of natural language with labeled edges. Its knowledge is collected from many sources that include expert-created resources, crowd-sourcing, and games with a purpose. It is designed to represent the general knowledge involved in understanding language, improving natural language applications by allowing the application to better understand the meanings behind the words people use.
 
 When ConceptNet is combined with word embeddings acquired from distributional semantics (such as word2vec), it provides applications with understanding that they would not acquire from distributional semantics alone, nor from narrower resources such as WordNet or DBPedia. We demonstrate this with state-of-the-art results on intrinsic evaluations of word relatedness that translate into improvements on applications of word vectors, including solving SAT-style analogies.
 
@@ -321,6 +316,9 @@ we know it for multiple reasons.
 
 \section{Related work}
 
+% TODO: this whole section
+[...]
+
 % Existing knowledge resources: WordNet, DBPedia, Freebase / Google Knowledge Graph
 % Previous publications of ConceptNet
 % Word embeddings from distributional semantics: word2vec, GloVe, Levy's Hyperwords
@@ -556,23 +554,25 @@ questions that Turney and his collaborators have collected. Unfortunately, the
 questions are not licensed for free distribution, but Turney provides them on
 request.
 
-Solving analogies over word embeddings is often described as comparing $b_2 -
-a_2$ to $b_1 - a_1$ \cite{mikolov2013word2vec}, but for the task of filling in
-the best pair for $a_2$ and $b_2$, it helps to take advantage of more of the
-structure of the question to provide more constraint than this single comparison.
+Solving analogies over word embeddings is often described as comparing the
+difference $b_2 - a_2$ to $b_1 - a_1$ \cite{mikolov2013word2vec}, but for the
+task of filling in the best pair for $a_2$ and $b_2$, it helps to take
+advantage of more of the structure of the question to provide more constraint
+than this single comparison.
 
-In a sensible analogy, there will usually be some semantic similarity between
-$a_1$ and $a_2$, and between $b_1$ and $b_2$, regardless of what the other
-terms are, so we should take this direct similarity into account. Also, in many
-cases, a satisfying analogy will still make sense when it is transposed to
-``$a_1$ is to $a_2$ as $b_1$ is to $b_2$''. The analogy ``fire : hot :: ice :
-cold'', for example, can be transposed to ``fire : ice :: hot : cold''.
+In a sensible analogy, the words on the right side of the analogy will be
+related in some way to the words on the left side, so we should aim for some
+amount of relatedness between $a_1$ and $a_2$, and between $b_1$ and $b_2$,
+regardless of what the other terms are. Also, in many cases, a satisfying
+analogy will still make sense when it is transposed to ``$a_1$ is to $a_2$ as
+$b_1$ is to $b_2$''. The analogy ``fire : hot :: ice : cold'', for example, can
+be transposed to ``fire : ice :: hot : cold''.
 
 This gives us three components that we can weigh to evaluate whether a pair
-($a_2$, $b_2$) completes an analogy: their separate similarity to $a_1$ and $b_1$,
-the differences between the pairs, and the differences between the transposed pairs.
-The total weight does not matter, so we can put these together into a vector
-equation with two free parameters:
+($a_2$, $b_2$) completes an analogy: their separate similarity to $a_1$ and
+$b_1$, the dot product of differences between the pairs, and the dot product of
+differences between the transposed pairs.  The total weight does not matter, so
+we can put these together into a vector equation with two free parameters:
 \begin{equation}
     \begin{split}
         s &= a_1 \cdot a_2 + b_1 \cdot b_2\\
@@ -584,9 +584,15 @@ equation with two free parameters:
 The appropriate values of $w_1$ and $w_2$ depend on the nature of the
 relationships in the analogy questions, and also on how these relationships
 appear in the vector space. We optimize these parameters separately for each
-system we test, using grid search over a number of possible values. The grid
-search is performed on odd-numbered questions, holding out the even-numbered
-questions for a final evaluation.
+system we test, using grid search over a number of possible values so that each
+system can achieve its best performance. The grid search is performed on
+odd-numbered questions, holding out the even-numbered questions for a final
+evaluation.
+
+The weights chosen for ConceptNet Numberbatch were $w_1 = 0.35$ and $w_2 =
+0.65$, with other word embeddings choosing similar values. This indicates,
+surprisingly, that the transposed form of the analogy was often more important
+than the directly stated form of the analogy for choosing the best answer pair.
 
 \subsection{An evaluation of common-sense stories}
 \label{story-evaluation}
@@ -671,6 +677,52 @@ noticeable overfitting.
 
 \subsection{Discussion of results}
 
+We have compared word embeddings that represent only distributional semantics
+(word2vec, GloVe, and LexVec), word embeddings that represent only relational
+knowledge (ConceptNet PPMI), and the combination of the two (ConceptNet
+Numberbatch), and we have shown that the whole is more than the sum of its
+parts.
+
+ConceptNet continues to be important in a field that has come to focus on word
+embeddings, because word embeddings can benefit from what ConceptNet knows.
+ConceptNet can make word embeddings more robust and more human-like, as shown
+by the state-of-the-art results that ConceptNet Numberbatch achieves at
+matching human judgments on multiple evaluations.
+
+The undistinguished results we got on the Story Cloze Test should perhaps be
+comforting to those who aim to improve the computational understanding of
+stories.  A ``bag of vectors'' approach, representing a story as the average of
+its word vectors, may be marginally more successful at choosing the correct
+ending to a story than other approaches, but the performance of this approach
+has likely reached a plateau. It seems that any sufficiently high-quality word
+embeddings can choose the correct ending about 59\% of the time, based on
+nothing but the assumption that the end of a story should be similar to the
+rest of it. This should perhaps be taken as a baseline: any representation
+designed to \emph{actually} understand the events in stories should get more
+than 59\% correct.
+
+The SAT analogy results are exciting, as they show that our word embeddings
+have a level of understanding of words that has traditionally been sought in
+college applicants. This is the case even though the system, like many others,
+is only adding and subtracting values that measure the relatedness of terms; it
+uses no particular representation of what the relationships between these terms
+actually are.
+
+It seems likely that there exists a way to take ConceptNet's relation labels
+into account and do even better at analogies. We have not yet found such a
+method that performs better than a simple comparison of word relatedness, and
+in ongoing research, we are continuing to look for one. But for now, we have
+shown that knowledge-informed word embeddings are up to the challenge of SAT
+analogies, and do not need to be relegated to a synthetic analogy data set
+designed only for testing word embeddings \cite{mikolov2013word2vec}.
+
+Any technique built on word embeddings should
+consider including a source of relational knowledge, or starting from a
+pre-trained set of word embeddings that has taken relational knowledge into
+account. One of the many goals of ConceptNet is to provide this knowledge in a
+convenient form that can be applied across many domains and many languages.
+
+
 \section{Availability of this code and data}
 
 % TODO: make Zenodo citations for Numberbatch
@@ -682,6 +734,12 @@ Zenodo at [FIXME]. The output embeddings, ConceptNet Numberbatch 2016.09, are si
 archived at [FIXME].
 
 \section{Acknowledgments}
+
+We would like to thank the tens of thousands of volunteers who provided the
+crowd-sourced knowledge that makes ConceptNet possible. This includes
+contributors to Open Mind Common Sense and its related projects, as well as
+contributors to Wikipedia and Wiktionary, who are improving the state of
+knowledge for humans and computers alike.
 
 \bibliographystyle{aaai}
 \bibliography{conceptnet-paper}
