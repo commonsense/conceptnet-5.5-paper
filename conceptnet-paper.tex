@@ -274,66 +274,76 @@ broader ecosystem of Linked Open Data.
 %   SuperSim (more self-contained than LRA and almost as good, 2013)
 % BagPack: solving analogies using either unstructured text or ConceptNet 4 (Rob will write about this)
 
+Word embeddings represent words as dense unit vectors of real numbers,
+where vectors that are close together are semantically related. This representation
+is appealing because it represents meaning as a continuous space, where similarity
+and relatedness can be treated as a metric. Word embeddings are often produced as a side-effect
+of a machine learning task, such as predicting a word in a sentence from its neighbors.
+
 \section{Applying ConceptNet to Word Embeddings}
-\label{applying-conceptnet-to-word-embeddings}
 
-Word embeddings represent words as low-dimensional vectors of real numbers,
-where vectors that are close together are semantically related. Recent
-developments in training word embeddings have yielded state-of-the-art results
-on many NLP tasks. In this section, we show how to effectively generate
-word embeddings, and improve existing word embeddings using ConceptNet.
+\subsection{ConceptNet as a PPMI Matrix}
 
-\subsection{Building Word Embeddings from ConceptNet}
-
-% TODO: copyedit
+We can calculate word embeddings directly from the ConceptNet graph by converting
+it into a matrix of its positive pointwise mutual information (PPMI), and then
+reducing its dimensionality using truncated singular value decomposition (SVD).
+This is similar to, but more effective than, a previous matrix representation of
+ConceptNet that applied SVD directly without PPMI \cite{speer2008analogyspace}.
 
 We represent the ConceptNet graph as a sparse, symmetric term-term matrix $M$.
-Each cell contains the sum of the edge weights between the two corresponding
-terms. For performance reasons, we discard terms connected to fewer than three
-edges. The discarded terms will later be reintroduced as the weighted average of
-their related terms.
+Each cell contains the sum of the weights of all edges that connect the two
+corresponding terms. For performance reasons, when building this matrix, we
+prune the fringe of the ConceptNet graph, discarding terms connected to fewer
+than three edges.
 
-To measure the association between terms, we treat $M$ as a co-occurrence
-matrix and approximate the positive pointwise mutual information (PPMI) between
-the terms. In addition, we apply context distributional smoothing with
-$\alpha=0.75$ \cite{levy2015embeddings}. This helps discount rare words. The
-resulting matrix $M^\text{PPMI}$ can be computed as:
+We convert this sparse co-occurrence graph to dense embeddings following the
+recommendations of  
+\citeauthor{levy2015embeddings} \shortcite{levy2015embeddings}. As recommended
+there, we apply PPMI with context distributional smoothing ($\alpha=0.75$),
+which discounts the impact of poorly-connected terms. The resulting matrix
+$M^\text{PPMI}$ can be computed as:
 
 $$
 M^\text{PPMI}_{ij} =
 \log \frac
   {\hat{P} \left(i, j\right)}
   {\hat{P} \left(i\right) \hat{P_\alpha} \left(j\right)}
-$$
-$$
+;
 \hat{P_\alpha} \left(j\right) =
 \frac
   {\left(\sum_i{M_{ij}}\right)^{0.75}}
   {\sum_k{\left(\sum_i{M_{ik}}\right)^{0.75}}}
 $$
 
-We generate a dense representation using a truncated singular value
-decomposition (SVD). An SVD computes the optimal $d$-dimensional word embedding,
-in terms $l2$ reconstruction loss. For a given matrix $M$, it returns the
-decomposition
+We then use truncated SVD to find a dense, rank-$d$ approximation to
+this large sparse matrix. The truncated SVD factors $M$ as $M \approx U \Sigma
+V^T$, where $U$ and $V$ are orthogonal $N \times d$ matrices and $\Sigma$ is a
+$d \times d$ diagonal matrix. We set $d = 300$, similarly to some other
+word-embedding systems.
 
-$$
-M = USV^T
-$$
+This factorization is the optimal rank-$d$ approximation to the sparse matrix,
+according to the $L_2$ loss in reconstructing the matrix. However, there is
+further smoothing we will apply, because our goal is not to reconstruct a PPMI
+matrix, but to produce embeddings that are effective for comparing word
+meanings.
 
-where $U$ and $V$ are orthogonal, and $S$ is diagonal. A Truncated SVD only
-computes the columns of $U$ and the rows of $V$ that correspond to the most
-significant singular values. Here, we select $d=300$.
-
-Finally, we obtain the desired word embeddings by $l1$-normalizing the columns
-of $U$ and $V$, then adding them. Adding $U$ and $V$ together includes second
-order similarity terms into the vectors. $l1$-normalizing the columns can be
-seen as weighing each dimension by their sparsity.
+Our own normalization that we have found to be effective is that we re-scale
+the columns of $U$ and $V$ by dividing by their $L_1$ norm, emphasizing
+components that distinguish sparse sets of concepts. This gives the transformed
+word and context embeddings $U'$ and $V'$, which are no longer orthogonal
+matrices. Following \citeauthor{levy2015embeddings}, we then compute $(U +
+V)\Sigma^{1/2}$ as our final word embeddings, combining each word with its
+context to promote second-order relationships between terms. This produces
+a matrix of word embeddings purely from ConceptNet that we call ConceptNet-PPMI.
 
 \subsection{Combining ConceptNet with Distributional Word Embeddings}
 
+Having created embeddings from ConceptNet alone, we would now like to create
+a more robust set of embeddings that represents both ConceptNet and distributional
+word embeddings learned from text.
+
 Retrofitting \cite{faruqui2015retrofitting} is a process that adjusts an
-existing matrix of word embeddings using a knowledge graph. Briefly, retrofitting
+existing matrix of word embeddings using a knowledge graph. Retrofitting
 infers new vectors $q_i$ with the objective of being close to their original
 values, $\hat{q_i}$, and also close to their neighbors in the graph with edges $E$,
 by minimizing this objective function:
@@ -348,11 +358,13 @@ The process of ``expanded retrofitting'', first described in
 \cite{speer2016ensemble}, can optimize this objective over a larger vocabulary,
 including terms from the knowledge graph that do not appear in the vocabulary
 of the word embeddings. This effectively sets $\alpha_i = 0$ for terms whose
-original values are undefined. The particular benefit of expanded retrofitting
-to ConceptNet is that it can benefit from the multilingual connections in
-ConceptNet. It learns more about English words via their translations in other
-languages, and gives these foreign-language terms embeddings in the same space
-as the English terms.
+original values are undefined. We set $\beta_{ij}$ according to the weights
+of the edges in ConceptNet.
+
+The particular benefit of expanded retrofitting to ConceptNet is that it can
+benefit from the multilingual connections in ConceptNet. It learns more about
+English words via their translations in other languages, and gives these
+foreign-language terms embeddings in the same space as the English terms.
 
 We add one more step to retrofitting, which is to subtract the mean of the
 vectors that result from retrofitting, then re-normalize them to unit vectors.
@@ -390,6 +402,11 @@ because ConceptNet is already represented in the retrofitting process. As an
 avenue for future expansion, we are experimenting with including distributional
 word embeddings from corpora of non-English text. Preliminary results show that
 this improves the multilingual performance of the embeddings.
+
+After retrofitting and merging, we have a labeled matrix of word embeddings whose
+vocabulary is derived from word2vec, GloVe, and the pruned ConceptNet graph. At
+this point, we can restore the nodes that we pruned away, assigning them vectors
+that are the average of their neighboring nodes.
 
 \section{Evaluation}
 
