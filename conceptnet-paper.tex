@@ -101,7 +101,7 @@ ConceptNet Numberbatch on these various semantic tasks.
 
 \section{Structure of ConceptNet}\label{structure-of-conceptnet}
 
-\subsection{Knowledge sources}\label{knowledge-sources}
+\subsection{Knowledge Sources}\label{knowledge-sources}
 
 ConceptNet 5.5 is built from the following sources:
 
@@ -178,7 +178,7 @@ edges is unimportant. The assertion (\emph{A}, \emph{SimilarTo},
 \emph{A}).
 
 
-\subsection{Term representation}\label{term-representation}
+\subsection{Term Representation}\label{term-representation}
 
 ConceptNet represents terms in a standardized form. The text is
 Unicode-normalized (in NFKC form) and lowercased, and split into
@@ -241,7 +241,7 @@ we have settled for disambiguating only the part of speech, which is also the
 representation of word senses targeted by the \emph{sense2vec} system
 \cite{trask2015sense2vec}.
 
-\subsection{Linked data}
+\subsection{Linked Data}
 
 ConceptNet imports knowledge from some other systems, such as WordNet, into its
 own representation. These other systems have their own target vocabularies that
@@ -257,7 +257,7 @@ untransformed data was.  As ConceptNet terms can also be given absolute URLs
 \url{http://api.conceptnet.io}), this allows ConceptNet to participate in the
 broader ecosystem of Linked Open Data.
 
-\section{Related work}
+\section{Related Work}
 
 % TODO: this whole section
 [...]
@@ -282,7 +282,7 @@ developments in training word embeddings have yielded state-of-the-art results
 on many NLP tasks. In this section, we show how to effectively generate
 word embeddings, and improve existing word embeddings using ConceptNet.
 
-\subsection{Building word embeddings from ConceptNet}
+\subsection{Building Word Embeddings from ConceptNet}
 
 % TODO: copyedit
 
@@ -329,7 +329,7 @@ of $U$ and $V$, then adding them. Adding $U$ and $V$ together includes second
 order similarity terms into the vectors. $l1$-normalizing the columns can be
 seen as weighing each dimension by their sparsity.
 
-\subsection{Combining ConceptNet with distributional word embeddings}
+\subsection{Combining ConceptNet with Distributional Word Embeddings}
 
 Retrofitting \cite{faruqui2015retrofitting} is a process that adjusts an
 existing matrix of word embeddings using a knowledge graph. Briefly, retrofitting
@@ -359,7 +359,7 @@ Retrofitting has a tendency to move all vectors closer to the vectors for
 highly-connected terms such as ``person''. Subtracting the mean helps to ensure
 that terms remain distinguishable from each other.
 
-\subsection{Combining multiple sources of embeddings}
+\subsection{Combining Multiple Sources of Embeddings}
 
 Retrofitting can be applied to any existing matrix of word embeddings, without
 needing access to the data that was used to train them. This is particularly
@@ -390,7 +390,7 @@ avenue for future expansion, we are experimenting with including distributional
 word embeddings from corpora of non-English text. Preliminary results show that
 this improves the multilingual performance of the embeddings.
 
-\section{Evaluation methods}
+\section{Evaluation}
 
 To compare the word-embedding ensemble presented in this paper (ConceptNet
 Numberbatch) to other systems, we will first compare results on intrinsic
@@ -411,7 +411,7 @@ using their published outputs on their preferred corpus of training text:
 We also compare to the ConceptNet PPMI embeddings, showing what performance
 can be achieved with ConceptNet and no other data.
 
-\subsection{Evaluations of word relatedness}
+\subsection{Evaluations of Word Relatedness}
 \label{intrinsic-evaluations}
 
 One way to evaluate the intrinsic performance of a semantic space is to ask it
@@ -451,7 +451,7 @@ out some test data until it was time to include results in this paper:
     previously-unseen evaluation.
 \end{itemize}
 
-\subsection{Solving SAT-style analogies}
+\subsection{Solving SAT-style Analogies}
 
 Proportional analogies are statements of the form ``$a_1$ is to $b_1$ as $a_2$
 is to $b_2$''. The task of filling in missing values of a proportional analogy
@@ -509,7 +509,7 @@ The weights chosen for ConceptNet Numberbatch were $w_1 = 0.35$ and $w_2 =
 surprisingly, that the transposed form of the analogy was often more important
 than the directly stated form of the analogy for choosing the best answer pair.
 
-\subsection{An evaluation of common-sense stories}
+\subsection{An Evaluation of Common-Sense Stories}
 \label{story-evaluation}
 
 The Story Cloze Test \cite{mostafazadeh2016cloze} is a recent evaluation of
@@ -590,7 +590,7 @@ noticeable overfitting.
 
 % TODO: evaluation table
 
-\subsection{Discussion of results}
+\subsection{Discussion of Results}
 
 We have compared word embeddings that represent only distributional semantics
 (word2vec, GloVe, and LexVec), word embeddings that represent only relational
@@ -638,7 +638,7 @@ account. One of the many goals of ConceptNet is to provide this knowledge in a
 convenient form that can be applied across many domains and many languages.
 
 
-\section{Availability of this code and data}
+\section{Availability of This Code and Data}
 
 % TODO: make Zenodo citations for Numberbatch
 
