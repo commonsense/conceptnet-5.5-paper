@@ -260,29 +260,51 @@ broader ecosystem of Linked Open Data.
 
 \section{Related Work}
 
-% TODO: this whole section
-[TODO]
+[TODO: existing knowledge resources]
 
 % Existing knowledge resources: WordNet, DBPedia, Freebase / Google Knowledge Graph
-% Previous publications of ConceptNet
-% Word embeddings from distributional semantics: word2vec, GloVe, Levy's Hyperwords
-% Retrofitting (the foundation for how we combine knowledge and distributional semantics)
-% Stuff that NELL is doing with general knowledge and word embeddings
-% Holographic embeddings
-% Turney's analogies:
-%   LRA (solving SAT analogies with Web search, 2005)
-%   SuperSim (more self-contained than LRA and almost as good, 2013)
-% BagPack: solving analogies using either unstructured text or ConceptNet 4 (Rob will write about this)
 
-Word embeddings represent words as dense unit vectors of real numbers,
-where vectors that are close together are semantically related. This representation
-is appealing because it represents meaning as a continuous space, where similarity
-and relatedness can be treated as a metric. Word embeddings are often produced as a side-effect
-of a machine learning task, such as predicting a word in a sentence from its neighbors.
+Word embeddings represent words as dense unit vectors of real numbers, where
+vectors that are close together are semantically related. This representation
+is appealing because it represents meaning as a continuous space, where
+similarity and relatedness can be treated as a metric. Word embeddings are
+often produced as a side-effect of a machine learning task, such as predicting
+a word in a sentence from its neighbors.  This approach to machine learning
+about semantics is sometimes referred to as \emph{distributional semantics} or
+\emph{distributed word representations}.
+
+Two prominent matrices of embeddings are the word2vec embeddings trained on 100
+billion words of Google News using skip-grams with negative sampling
+\cite{mikolov2013word2vec}, and the GloVe 1.2 embeddings trained on 840 billion
+words of the Common Crawl \cite{pennington2014glove}. These matrices are
+downloadable, and we will be using them both as a point of comparison and as
+inputs to an ensemble. \citeauthor{levy2015embeddings}
+\shortcite{levy2015embeddings} evaluated multiple embedding techniques and the
+effects of various explicit and implicit hyperparameters, produced their own
+performant word embeddings using a truncated SVD of words and their contexts,
+and provided recommendations for the engineering of word embeddings.
+
+Holographic embeddings \cite{nickel2015holographic} are embeddings learned from
+a labeled knowledge graph, under the constraint that a circular correlation of
+these embeddings gives a vector representing a relation. This representation
+seems extremely relevant to ConceptNet. In our attempt to implement it on
+ConceptNet so far, it has converged too slowly to experiment with, but this
+could be overcome eventually with some optimization and additional computing
+power.
+
+Peter Turney has produced many results about machine learning of analogies, and created
+a data set of SAT-style analogy questions to evaluate the results \cite{turney2013supersim}.
+Many of the best results on this evaluation have been achieved by Turney in his own work.
+One interesting system not by Turney is BagPack \cite{herdagdelen2009bagpack},
+which could learn about analogies either from unstructured text or from ConceptNet 4.
+
+% NELL has a cool thing, right?
 
 \section{Applying ConceptNet to Word Embeddings}
 
 \subsection{Computing ConceptNet Embeddings Using PPMI}
+
+% TODO: condense as much as possible
 
 We can calculate word embeddings directly from the ConceptNet graph by converting
 it into a matrix of its positive pointwise mutual information (PPMI), and then
@@ -375,12 +397,10 @@ needing access to the data that was used to train them. This is particularly
 useful because it allows building on publicly-released matrices of embeddings
 whose input data is unavailable or difficult to acquire.
 
-Two prominent matrices of embeddings are the word2vec embeddings trained on 100
-billion words of Google News using skip-grams with negative sampling
-\cite{mikolov2013word2vec}, and the GloVe 1.2 embeddings trained on 840 billion
-words of the Common Crawl \cite{pennington2014glove}. These matrices represent
-somewhat different domains of text and have complementary strengths, and the
-way that we can benefit from them the most is by taking both of them as input.
+As described in the ``Related Work'' section, word2vec and GloVe both provide
+recommended pre-trained matrices. These matrices represent somewhat different
+domains of text and have complementary strengths, and the way that we can
+benefit from them the most is by taking both of them as input.
 
 We first learn a separate matrix of embeddings from the combination of each
 input matrix and the pruned ConceptNet graph, using expanded retrofitting. We
@@ -652,6 +672,7 @@ college applicants. This is the case even though the system, like many others,
 is only adding and subtracting values that measure the relatedness of terms; it
 uses no particular representation of what the relationships between these terms
 actually are.
+
 
 It seems likely that there exists a way to take ConceptNet's relation labels
 into account and do even better at analogies. We have not yet found such a
