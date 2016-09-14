@@ -54,7 +54,6 @@ languages.
 ConceptNet represents relations between words such as:
 
 \begin{itemize}
-    \item \emph{Fire} is \emph{hot}.
     \item A \emph{net} is used for \emph{catching fish}.
     \item ``\emph{Leaves}'' is a form of the word ``\emph{leaf}''.
     \item The word \emph{cold} in English is \emph{studený} in Czech.
@@ -109,26 +108,24 @@ ConceptNet 5.5 is built from the following sources:
 \begin{itemize}
 \item
   Facts acquired from Open Mind Common Sense (OMCS) \cite{singh2002omcs}
+  and sister projects in other languages \cite{anacleto2006portuguese}
+  \cite{eckhardt2008kid}
 \item
   Information extracted from parsing Wiktionary, in multiple languages,
   with a custom parser (``Wikiparsec'')
 \item
-  ``Games with a purpose'' designed to collect common knowledge,
-  including Verbosity \cite{vonahn2006verbosity} in English, nadya.jp
-  \cite{nakahara2011nadya} in Japanese, and the PTT Pet Game
-  \cite{kuo2009petgame} in Chinese
+  ``Games with a purpose'' designed to collect common knowledge
+  \cite{vonahn2006verbosity} \cite{nakahara2011nadya} \cite{kuo2009petgame}
 \item
   Open Multilingual WordNet \cite{bond2013linking}, a linked-data
   representation of WordNet \cite{miller1998wordnet} and its parallel
-  projects in multiple languages, representing word meanings as
-  ``synsets'' of synonymous word senses
+  projects in multiple languages
 \item
   JMDict \cite{breen2004jmdict}, a Japanese-multilingual dictionary
 \item
   OpenCyc \cite{matuszek2006cyc}, a hierarchy of hypernyms provided by
   Cyc, a system that represents common sense knowledge in predicate
-  logic, and includes connections to the UMBEL ontology
-  \cite{bergman2008umbel}
+  logic
 \item
   A subset of DBPedia \cite{auer2007dbpedia}, a network of facts
   extracted from Wikipedia infoboxes
@@ -159,12 +156,6 @@ relations. These generalized relations are similar in purpose to WordNet's
 relations such as \emph{hyponym} and \emph{meronym}, as well as to the qualia
 of the Generative Lexicon theory \cite{pustejovsky1991generative}.
 
-To allow for expansion to new kinds of knowledge, a data
-source can provide new relations that are considered provisional and
-appear in a separate namespace. ConceptNet 5.5 includes 10 provisional
-relations that come from DBPedia's much larger class of relations,
-including \emph{dbpedia/knownFor} and \emph{dbpedia/genre}.
-
 Relations with specific semantics, such as \emph{UsedFor} and
 \emph{HasPrerequisite}, tend to connect common words and phrases, while
 rarer words are connected by more general relations such as
@@ -183,7 +174,8 @@ edges is unimportant. The assertion (\emph{A}, \emph{SimilarTo},
 
 ConceptNet represents terms in a standardized form. The text is
 Unicode-normalized (in NFKC form) and lowercased, and split into
-non-punctuation tokens using a generalization of the Unicode word
+non-punctuation tokens using the tokenizer in the Python package
+\texttt{wordfreq} \cite{speer2016wordfreq}, which builds on the standard Unicode word
 segmentation algorithm. The tokens are joined with underscores, and this
 text is prepended with the URI \texttt{/c/lang}, where \emph{lang} is
 the BCP 47 language code for the language the term is in. As an example,
@@ -191,13 +183,9 @@ the English term ``United States'' becomes
 \texttt{/c/en/united\_states}. Relations have a separate namespace of
 URIs prefixed with \texttt{/r}, such as \texttt{/r/PartOf}.
 
-The particular tokenizer used is the default tokenizer in the Python package
-\texttt{wordfreq}, version 1.5 \cite{speer2016wordfreq}. Its most notable
-difference from Unicode tokenization is that it does not insert word breaks
-between all Han or Thai characters, whereas the Unicode algorithm would.
-
 Previous versions of ConceptNet required terms in English to be in lemmatized
-form, so that, for example, ``drive'' and ``driving'' would be represented as
+form, so that, for example, ``United States'' had to be represented as
+\texttt{/c/en/unite\_state}. In this representation, ``drive'' and ``driving'' were
 the same term, allowing the assertions (\emph{car}, \emph{UsedFor},
 \emph{driving}) and (\emph{drive}, \emph{HasPrerequisite}, \emph{have license})
 to be connected. ConceptNet 5.5 removes the lemmatizer, and instead
@@ -231,16 +219,8 @@ of the word ``lead'', and is effectively included within
 linked to it with the implicit relation \emph{SenseOf}. Many data
 sources provide information about parts of speech, allowing us to use
 this as a common representation that provides a small amount of
-disambiguation.
-
-We have experimented with further disambiguating individual word senses, as in
-\texttt{/c/en/lead/n/metal}, following up on work that showed that word senses
-can be disambiguated by finding the best match to nearby words on features
-including ConceptNet \cite{havasi2010coarse}. However, we have not found a
-stable vocabulary of distinct word senses to use for this purpose. So far,
-we have settled for disambiguating only the part of speech, which is also the
-representation of word senses targeted by the \emph{sense2vec} system
-\cite{trask2015sense2vec}.
+disambiguation. Further disambiguation is allowed by the URI structure,
+but not currently used.
 
 \subsection{Linked Data}
 
@@ -250,32 +230,33 @@ need to be aligned with ConceptNet, which is usually an underspecified,
 many-to-many alignment.
 
 A term that is imported from another knowledge graph will be connected to
-ConceptNet nodes via the pseudo-relation \texttt{ExternalURL}, pointing to an
+ConceptNet nodes via the pseudo-relation \emph{ExternalURL}, pointing to an
 absolute URL that represents that term in that external resource.  This
 preserves the provenance of the data and enables looking up what the
-untransformed data was.  As ConceptNet terms can also be given absolute URLs
+untransformed data was.
+
+As ConceptNet terms can also be given absolute URLs
 (by prefixing their local URI with the domain name
 \url{http://api.conceptnet.io}), this allows ConceptNet to participate in the
 broader ecosystem of Linked Open Data.
 
 \section{Related Work}
 
-% Rob will copyedit some
-ConceptNet \cite{speer2012conceptnet} is the knowledge graph version of the Open Mind
+ConceptNet is the knowledge graph version of the Open Mind
 Common Sense project \cite{singh2002omcs}, a large common sense knowledge base
-of the most basic things a person knows. The idea to create a lexical resource
-which would contain world knowledge to augment a general reasoning system is
-not new and has traditionally played a role in NLP from from common sense
-knowledge bases like Cyc \cite{lenat1989cyc} to more modern linked data
-structures like the Google Knowledge Graph \cite{singhal2012googleblog}.
-ConceptNet is much more like a traditional common sense knowledge base in
-content: it focuses only on general knowledge rather than facts and information
-about named entities. Unlike ConceptNet, however, most such knowledge bases are
-tuned to logical reasoning. Like the Google Knowledge Graph, fact repositories
-like DBPedia \cite{auer2007dbpedia} or lexical databases like WordNet
-\cite{miller1998wordnet} are much broader in the type of data they contain.
-ConceptNet is also one of the only lexical resources tailored to vector-based
-approaches.
+of the most basic things a person knows.
+
+Many projects strive to create lexical resources of general knowledge.
+Cyc \cite{matuszek2006cyc} has built an ontology of common-sense knowledge
+in predicate logic form over the decades. DBPedia \cite{auer2007dbpedia}
+extracts knowledge from Wikipedia infoboxes, providing a large number of facts,
+largely focused on named entities that have Wikipedia articles. The Google
+Knowledge Graph \cite{singhal2012googleblog} is perhaps the largest and
+most general knowledge graph, though its content is not freely available.
+ConceptNet's role compared to these other resources is to provide a sufficiently
+large, free knowledge graph that focuses on the meanings of words (not just
+named entities) as they are used in natural language. This focus on words makes
+it particularly compatible with the idea of representing word meanings as vectors.
 
 Word embeddings represent words as dense unit vectors of real numbers, where
 vectors that are close together are semantically related. This representation
@@ -305,14 +286,6 @@ seems extremely relevant to ConceptNet. In our attempt to implement it on
 ConceptNet so far, it has converged too slowly to experiment with, but this
 could be overcome eventually with some optimization and additional computing
 power.
-
-Peter Turney has produced many results about machine learning of analogies, and created
-a data set of SAT-style analogy questions to evaluate the results \cite{turney2013supersim}.
-Many of the best results on this evaluation have been achieved by Turney in his own work.
-One interesting system not by Turney is BagPack \cite{herdagdelen2009bagpack},
-which could learn about analogies either from unstructured text or from ConceptNet 4.
-
-% NELL has a cool thing, right?
 
 \section{Applying ConceptNet to Word Embeddings}
 
@@ -485,6 +458,11 @@ questions that Turney and his collaborators have collected. Unfortunately, the
 questions are not licensed for free distribution, but Turney provides them on
 request.
 
+Many of the best results on this evaluation have been achieved by Turney in his
+own work. One interesting system not by Turney is BagPack
+\cite{herdagdelen2009bagpack}, which could learn about analogies either from
+unstructured text or from ConceptNet 4.
+
 Solving analogies over word embeddings is often described as comparing the
 difference $b_2 - a_2$ to $b_1 - a_1$ \cite{mikolov2013word2vec}, but for the
 task of filling in the best pair for $a_2$ and $b_2$, it helps to take
@@ -552,7 +530,7 @@ follow from another, only which words are related in context. Improving the
 score of this model should not be portrayed as actual ``story understanding'',
 but it recognizes that sensible stories do not suddenly change topic.
 
-\section{Results}
+\section{Results and Discussion}
 \begin{figure}[t]
 \centering
 \includegraphics[width=3.3in]{eval-graph.pdf}
@@ -577,6 +555,7 @@ SAT Analogies (acc)            & .545 & .583 & .564
 \end{tabular}
 \caption{The Spearman correlation ($\rho$) or accuracy (acc) of ConceptNet Numberbatch 16.09, our hybrid system,
 on data used in development and data held out for testing.}
+\label{eval-table}
 \end{table}
 
 Figure~\ref{eval-results} compares the performance of the systems we compared
@@ -587,8 +566,12 @@ unobservable larger set \cite{bonett2000sample}. For the analogy and story evalu
 the Y-axis is simply the proportion of questions answered correctly, with 95\%
 confidence intervals calculated using the binomial exact test.
 
-MEN-3000 and the Story Cloze Test have a standard development/test split, so
-their data shows performance on the test data only.
+The scores of our system on all these evaluations appear in
+Table~\ref{eval-table}, including a development/test breakdown that shows no
+noticeable overfitting. The ``Final'' column is meant for comparisons to other
+papers and used in the graph. It uses the standard test set if it exists (which
+is the case for MEN-3000 and Story Cloze), or all of the data
+otherwise.
 
 On the four word-relatedness evaluations, ConceptNet Numberbatch 16.09 (the
 complete system described in this paper) is state of the art, performing
@@ -605,6 +588,20 @@ self-contained system, SuperSim \cite{turney2013supersim}, which scored 54.8\%.
 This also compares to the performance of the average human college applicant,
 said by Turney and Littman to be 57.0\%.
 
+The analogy results show that our word embeddings have a level of understanding
+of words that has traditionally been sought in college applicants. This is the
+case even though the system, like many others, is only adding and subtracting
+values that measure the relatedness of terms; it uses no particular
+representation of what the relationships between these terms actually are.
+
+It seems likely that there exists a way to take ConceptNet's relation labels
+into account and do even better at analogies. We have not yet found such a
+method that performs better than a simple comparison of word relatedness, and
+in ongoing research, we are continuing to look for one. But for now, we have
+shown that knowledge-informed word embeddings are up to the challenge of SAT
+analogies, and do not need to be relegated to a synthetic analogy data set
+designed only for testing word embeddings.
+
 The performance of our system on the Story Cloze Test was acceptable but
 unremarkable.  ConceptNet Numberbatch chose the correct ending 59.5\% of the
 time, which is in fact slightly better than any results reported by
@@ -614,14 +611,15 @@ by using the same bag-of-vectors approach on other word embeddings. The best
 score of 59.9\% was achieved by LexVec, with Numberbatch, GloVe, and word2vec
 all within its margin of error.
 
-The precise scores of our system on all these evaluations appear in
-Table~\ref{eval-table}, including a development/test breakdown that shows no
-noticeable overfitting. The ``Final'' column is meant for comparisons to other
-papers; it uses the standard test set if it exists, or all of the data
-otherwise.
-
-
-\subsection{Discussion of Results}
+This result should perhaps be comforting to those who aim to improve the
+computational understanding of stories.  A ``bag of vectors'' approach  may be
+marginally more successful at choosing the correct ending to a story than other
+approaches, but the performance of this approach has likely reached a plateau.
+It seems that any sufficiently high-quality word embeddings can choose the
+correct ending about 59\% of the time, based on nothing but the assumption that
+the end of a story should be similar to the rest of it. This should perhaps be
+taken as a baseline: any representation designed to usefully represent the
+events in stories should get more than 59\% correct.
 
 We have compared word embeddings that represent only distributional semantics
 (word2vec, GloVe, and LexVec), word embeddings that represent only relational
@@ -635,40 +633,11 @@ ConceptNet can make word embeddings more robust and more human-like, as shown
 by the state-of-the-art results that ConceptNet Numberbatch achieves at
 matching human judgments on multiple evaluations.
 
-The undistinguished results we got on the Story Cloze Test should perhaps be
-comforting to those who aim to improve the computational understanding of
-stories.  A ``bag of vectors'' approach, representing a story as the average of
-its word vectors, may be marginally more successful at choosing the correct
-ending to a story than other approaches, but the performance of this approach
-has likely reached a plateau. It seems that any sufficiently high-quality word
-embeddings can choose the correct ending about 59\% of the time, based on
-nothing but the assumption that the end of a story should be similar to the
-rest of it. This should perhaps be taken as a baseline: any representation
-designed to \emph{actually} understand the events in stories should get more
-than 59\% correct.
-
-The SAT analogy results are exciting, as they show that our word embeddings
-have a level of understanding of words that has traditionally been sought in
-college applicants. This is the case even though the system, like many others,
-is only adding and subtracting values that measure the relatedness of terms; it
-uses no particular representation of what the relationships between these terms
-actually are.
-
-
-It seems likely that there exists a way to take ConceptNet's relation labels
-into account and do even better at analogies. We have not yet found such a
-method that performs better than a simple comparison of word relatedness, and
-in ongoing research, we are continuing to look for one. But for now, we have
-shown that knowledge-informed word embeddings are up to the challenge of SAT
-analogies, and do not need to be relegated to a synthetic analogy data set
-designed only for testing word embeddings \cite{mikolov2013word2vec}.
-
 Any technique built on word embeddings should
 consider including a source of relational knowledge, or starting from a
 pre-trained set of word embeddings that has taken relational knowledge into
 account. One of the many goals of ConceptNet is to provide this knowledge in a
 convenient form that can be applied across many domains and many languages.
-
 
 \section{Availability of This Code and Data}
 
