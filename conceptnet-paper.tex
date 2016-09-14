@@ -335,19 +335,14 @@ As in Levy et al., we determine the pointwise mutual information of the matrix
 entries with context distributional smoothing, clip the negative values to
 yield positive pointwise mutual information (PPMI), reduce the dimensionality
 of the result to 300 dimensions with truncated SVD, and combine the terms and contexts
-symmetrically into a single matrix of word embeddings. This gives a matrix
-of word embeddings we call ConceptNet-PPMI.
+symmetrically into a single matrix of word embeddings.
+
+This gives a matrix of word embeddings we call ConceptNet-PPMI.  These
+embeddings implicitly represent the overall graph structure of ConceptNet, and
+allow us to compute the approximate connectedness of any pair of nodes.
 
 We can expand ConceptNet-PPMI to restore the nodes that we pruned away,
 assigning them vectors that are the average of their neighboring nodes.
-
-These embeddings implicitly represent the overall graph structure of
-ConceptNet, and allow us to compute the approximate connectedness of any pair
-of nodes. Nodes are strongly connected when they are connected by short paths
-of edges, possibly many such paths, with high weights. They are weakly
-connected when one must traverse long or low-weight paths of edges to get
-between them. When the dot product of terms in ConceptNet-PPMI is high, it
-means they are strongly connected in ConceptNet.
 
 \subsection{Combining ConceptNet with Distributional Word Embeddings}
 
@@ -397,21 +392,17 @@ recommended pre-trained matrices. These matrices represent somewhat different
 domains of text and have complementary strengths, and the way that we can
 benefit from them the most is by taking both of them as input.
 
-We first learn a separate matrix of embeddings from the combination of each
-input matrix and the pruned ConceptNet graph, using expanded retrofitting. We
-align the results and concatenate their columns, and then project these
-concatenated columns into a smaller set of features using truncated SVD. The
-truncated SVD allows us to produce more compact (300-dimensional) embeddings,
-mitigate redundant features, and infer compatible embeddings for terms that
-are missing from one of the vocabularies. For details of this process, we
-refer to the \texttt{conceptnet5.vectors.merge} module in the ConceptNet 5.5
-codebase.
+To do this, we apply retrofitting to both matrices, then find a globally
+linear projection that aligns the results on their common vocabulary.
+This process was inspired by \citeauthor{zhao2015learning} \shortcite{zhao2015learning}.
+We find the projection by concatenating the columns of the matrices and reducing
+them to 300 dimensions using truncated SVD. We then use this alignment to infer
+compatible embeddings for terms that are missing from one of the vocabularies.
 
-In this paper, we use this retrofitting-and-merging process by retrofitting
-ConceptNet onto the word2vec and GloVe embeddings.  As an avenue for future
-expansion, we are experimenting with including distributional word embeddings
-from corpora of non-English text. Preliminary results show that this improves
-the multilingual performance of the embeddings.
+In ongoing work, we are experimenting with additionally including
+distributional word embeddings from corpora of non-English text in this merger.
+Preliminary results show that this improves the multilingual performance of the
+embeddings.
 
 After retrofitting and merging, we have a labeled matrix of word embeddings
 whose vocabulary is derived from word2vec, GloVe, and the pruned ConceptNet
@@ -488,7 +479,7 @@ Much of the groundwork for evaluating systems' ability to solve proportional
 analogies was laid by Peter Turney, including his method of Latent Relational
 Analysis \cite{turney2005lra}, which was quite effective at solving
 proportional analogies by repeatedly searching the Web for the words involved
-in them. A newer method called SuperSim \cite{turney2013distributional} does
+in them. A newer method called SuperSim \cite{turney2013supersim} does
 not require Web searching. These methods are evaluated on a dataset of 374 SAT
 questions that Turney and his collaborators have collected. Unfortunately, the
 questions are not licensed for free distribution, but Turney provides them on
@@ -566,9 +557,8 @@ but it recognizes that sensible stories do not suddenly change topic.
 \centering
 \includegraphics[width=3.3in]{eval-graph.pdf}
 \caption{
-    Performance across multiple evaluations of word embeddings built from
-    ConceptNet, compared to other public word embeddings. Error bars
-    show 95\% confidence intervals.
+    Performance of word embeddings across multiple evaluations.
+    Error bars show 95\% confidence intervals.
 }
 \label{eval-results}
 \end{figure}

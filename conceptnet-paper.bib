@@ -195,18 +195,6 @@
   publisher={MIT press}
 }
 
-@article{turney2005lra,
-  author    = {Peter D. Turney},
-  title     = {Measuring Semantic Similarity by Latent Relational Analysis},
-  journal   = {CoRR},
-  volume    = {abs/cs/0508053},
-  year      = {2005},
-  url       = {http://arxiv.org/abs/cs/0508053},
-  timestamp = {Mon, 05 Dec 2011 18:05:30 +0100},
-  biburl    = {http://dblp.uni-trier.de/rec/bib/journals/corr/abs-cs-0508053},
-  bibsource = {dblp computer science bibliography, http://dblp.org}
-}
-
 # Existing implementations of word similarity
 # -------------------------------------------
 
@@ -249,19 +237,6 @@
   booktitle={EMNLP},
   pages={1393--1398},
   year={2013}
-}
-
-@article{turney2013supersim,
-  title={Distributional Semantics Beyond Words: Supervised Learning of Analogy and Paraphrase},
-  author={Turney, Peter D},
-  volume={1},
-  pages={353--366},
-  year={2013},
-  url={http://aclweb.org/anthology/Q/Q13/Q13-1029.pdf},
-  comment={
-    References Turney's current SAT data set, and provides the best performance on it without
-    Web searching.
-  }
 }
 
 @article{pennington2014glove,
@@ -336,6 +311,50 @@
   year={2016}
 }
 
+# Other analogy systems
+# ---------------------
+
+@article{turney2005lra,
+  author    = {Peter D. Turney},
+  title     = {Measuring Semantic Similarity by Latent Relational Analysis},
+  journal   = {CoRR},
+  volume    = {abs/cs/0508053},
+  year      = {2005},
+  url       = {http://arxiv.org/abs/cs/0508053},
+  timestamp = {Mon, 05 Dec 2011 18:05:30 +0100},
+  biburl    = {http://dblp.uni-trier.de/rec/bib/journals/corr/abs-cs-0508053},
+  bibsource = {dblp computer science bibliography, http://dblp.org}
+}
+
+@inproceedings{herdagdelen2009bagpack,
+ author = {Herda\v{g}delen, Ama\c{c} and Baroni, Marco},
+ title = {BagPack: A General Framework to Represent Semantic Relations},
+ booktitle = {Proceedings of the Workshop on Geometrical Models of Natural Language Semantics},
+ series = {GEMS '09},
+ year = {2009},
+ location = {Athens, Greece},
+ pages = {33--40},
+ numpages = {8},
+ url = {http://dl.acm.org/citation.cfm?id=1705415.1705420},
+ acmid = {1705420},
+ publisher = {Association for Computational Linguistics},
+ address = {Stroudsburg, PA, USA},
+} 
+
+
+@article{turney2013supersim,
+  title={Distributional Semantics Beyond Words: Supervised Learning of Analogy and Paraphrase},
+  author={Turney, Peter D},
+  volume={1},
+  pages={353--366},
+  year={2013},
+  url={http://aclweb.org/anthology/Q/Q13/Q13-1029.pdf},
+  comment={
+    References Turney's current SAT data set, and provides the best performance on it without
+    Web searching.
+  }
+}
+
 # Ways to extend word similarity
 # ------------------------------
 
@@ -362,7 +381,7 @@
 @inproceedings{soricut2015unsupervised,
   title={Unsupervised morphology induction using word embeddings},
   author={Soricut, Radu and Och, Franz},
-  booktitle={Proc. NAACL},
+  booktitle={Proceedings of NAACL},
   year={2015}
 }
 
