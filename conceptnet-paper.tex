@@ -246,17 +246,21 @@ ConceptNet is the knowledge graph version of the Open Mind
 Common Sense project \cite{singh2002omcs}, a large common sense knowledge base
 of the most basic things a person knows.
 
-Many projects strive to create lexical resources of general knowledge.
-Cyc \cite{matuszek2006cyc} has built an ontology of common-sense knowledge
-in predicate logic form over the decades. DBPedia \cite{auer2007dbpedia}
-extracts knowledge from Wikipedia infoboxes, providing a large number of facts,
-largely focused on named entities that have Wikipedia articles. The Google
-Knowledge Graph \cite{singhal2012googleblog} is perhaps the largest and
-most general knowledge graph, though its content is not freely available.
-ConceptNet's role compared to these other resources is to provide a sufficiently
-large, free knowledge graph that focuses on the meanings of words (not just
-named entities) as they are used in natural language. This focus on words makes
-it particularly compatible with the idea of representing word meanings as vectors.
+Many projects strive to create lexical resources of general knowledge.  Cyc
+\cite{matuszek2006cyc} has built an ontology of common-sense knowledge in
+predicate logic form over the decades. DBPedia \cite{auer2007dbpedia} extracts
+knowledge from Wikipedia infoboxes, providing a large number of facts, largely
+focused on named entities that have Wikipedia articles. The Google Knowledge
+Graph \cite{singhal2012googleblog} is perhaps the largest and most general
+knowledge graph, though its content is not freely available. It focuses largely
+on named entities that can be disambiguated, with a motto of ``things, not
+strings''.
+
+ConceptNet's role compared to these other resources is to provide a
+sufficiently large, free knowledge graph that focuses on the meanings of words
+(not named entities) as they are used in natural language. This focus on words
+makes it particularly compatible with the idea of representing word meanings as
+vectors.
 
 Word embeddings represent words as dense unit vectors of real numbers, where
 vectors that are close together are semantically related. This representation
@@ -430,8 +434,7 @@ out some test data until it was time to include results in this paper:
 \item
     RW has no standard dev/test breakdown. We sampled 2/3 of its items as
     a development set and held out the other 1/3 (every third line of the file,
-    starting with the third). However, we report results on the complete set,
-    for consistency with other publications.
+    starting with the third).
 \item
     We used all of WordSim-353 in development.
 \item
@@ -548,8 +551,8 @@ but it recognizes that sensible stories do not suddenly change topic.
 \hline
 MEN-3000 ($\rho$)              & .853 & .861 & .861 \\
 Rare Words ($\rho$)            & .603 & .578 & .596 \\
-MTurk-771 ($\rho$)             & ---- & .804 & .804 \\
-WordSim-353 ($\rho$)           & .827 & ---- & .827 \\
+MTurk-771 ($\rho$)             &  --- & .804 & .804 \\
+WordSim-353 ($\rho$)           & .827 &  --- & .827 \\
 Story Cloze Test (acc)         & .604 & .595 & .595 \\
 SAT Analogies (acc)            & .545 & .583 & .564
 \end{tabular}
