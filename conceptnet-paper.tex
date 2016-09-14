@@ -263,7 +263,6 @@ broader ecosystem of Linked Open Data.
 % TODO: this whole section
 [...]
 
-% Existing knowledge resources: WordNet, DBPedia, Freebase / Google Knowledge Graph
 % Previous publications of ConceptNet
 % Word embeddings from distributional semantics: word2vec, GloVe, Levy's Hyperwords
 % Retrofitting (the foundation for how we combine knowledge and distributional semantics)
@@ -273,6 +272,8 @@ broader ecosystem of Linked Open Data.
 %   LRA (solving SAT analogies with Web search, 2005)
 %   SuperSim (more self-contained than LRA and almost as good, 2013)
 % BagPack: solving analogies using either unstructured text or ConceptNet 4 (Rob will write about this)
+
+ConceptNet \cite{Speer2012Cnet} is the knowledge graph version of the Open Mind Common Sense project \cite{Singh2002OMCS}, a large common sense knowledge base of the most basic things a person knows. The idea to create a lexical resource which would contain world knowledge to augment a general reasoning system is not new and has traditionally played a role in NLP from from common sense knowledge bases like Cyc \cite{lenat1989cyc} to more modern linked data structures like the Google Knowledge Graph \cite{Singhal2012googleblog}. ConceptNet is much more like a traditional common sense knowledge base in content: it focuses only on general knowledge rather than facts and information about named entities. Unlike ConceptNet, however, most such knowledge bases are tuned to logical reasoning. Like the Google Knowledge Graph, fact repositories like DBPedia \cite{Auer2007dbpedia} or lexical databases like WordNet \cite{miller1998wordnet} are much broader in the type of data they contain. ConceptNet is also one of the only lexical resources tailored to vector-based approaches.
 
 \section{Applying ConceptNet to Word Embeddings}
 \label{applying-conceptnet-to-word-embeddings}
