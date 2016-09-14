@@ -260,9 +260,22 @@ broader ecosystem of Linked Open Data.
 
 \section{Related Work}
 
-[TODO: existing knowledge resources]
-
-% Existing knowledge resources: WordNet, DBPedia, Freebase / Google Knowledge Graph
+% Rob will copyedit some
+ConceptNet \cite{speer2012conceptnet} is the knowledge graph version of the Open Mind
+Common Sense project \cite{singh2002omcs}, a large common sense knowledge base
+of the most basic things a person knows. The idea to create a lexical resource
+which would contain world knowledge to augment a general reasoning system is
+not new and has traditionally played a role in NLP from from common sense
+knowledge bases like Cyc \cite{lenat1989cyc} to more modern linked data
+structures like the Google Knowledge Graph \cite{singhal2012googleblog}.
+ConceptNet is much more like a traditional common sense knowledge base in
+content: it focuses only on general knowledge rather than facts and information
+about named entities. Unlike ConceptNet, however, most such knowledge bases are
+tuned to logical reasoning. Like the Google Knowledge Graph, fact repositories
+like DBPedia \cite{auer2007dbpedia} or lexical databases like WordNet
+\cite{miller1998wordnet} are much broader in the type of data they contain.
+ConceptNet is also one of the only lexical resources tailored to vector-based
+approaches.
 
 Word embeddings represent words as dense unit vectors of real numbers, where
 vectors that are close together are semantically related. This representation
@@ -271,7 +284,8 @@ similarity and relatedness can be treated as a metric. Word embeddings are
 often produced as a side-effect of a machine learning task, such as predicting
 a word in a sentence from its neighbors.  This approach to machine learning
 about semantics is sometimes referred to as \emph{distributional semantics} or
-\emph{distributed word representations}.
+\emph{distributed word representations}, and it contrasts with the
+knowledge-driven approach of semantic networks or knowledge graphs.
 
 Two prominent matrices of embeddings are the word2vec embeddings trained on 100
 billion words of Google News using skip-grams with negative sampling
