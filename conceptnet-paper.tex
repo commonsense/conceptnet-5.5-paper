@@ -318,54 +318,35 @@ which could learn about analogies either from unstructured text or from ConceptN
 
 \subsection{Computing ConceptNet Embeddings Using PPMI}
 
-% TODO: condense as much as possible
-
-We can calculate word embeddings directly from the ConceptNet graph by converting
-it into a matrix of its positive pointwise mutual information (PPMI), and then
-reducing its dimensionality using truncated singular value decomposition (SVD).
-This is similar to, but more effective than, a previous matrix representation of
-ConceptNet that applied SVD directly without PPMI \cite{speer2008analogyspace}.
-
-The process we apply largely follows the practical recommendations of
-\citeauthor{levy2015embeddings} \shortcite{levy2015embeddings}, including a
-number of normalizations and parameters that may appear ad-hoc. Levy et al.~use
-this sequence of steps (PPMI, with context distributional smoothing, followed
-by truncated SVD) to build a high-quality system of word embeddings from
-Wikipedia text. We find that nearly the same steps work well when applied to
-terms and their neighbors in ConceptNet, instead of to words and their contexts
-in a corpus.
-
-We begin by representing the ConceptNet graph as a sparse, symmetric term-term matrix $M$.
+We can represent the ConceptNet graph as a sparse, symmetric term-term matrix.
 Each cell contains the sum of the weights of all edges that connect the two
 corresponding terms. For performance reasons, when building this matrix, we
 prune the fringe of the ConceptNet graph, discarding terms connected to fewer
 than three edges.
 
-We apply PPMI with context distributional smoothing ($\alpha=0.75$), giving the
-sparse matrix $M^\mathrm{PPMI}$. We then use truncated SVD to find a dense, rank-$d$
-approximation to this large sparse matrix. The truncated SVD factors this
-matrix as $M^\mathrm{PPMI} \approx U \Sigma V^T$, where $U$ and $V$ are orthogonal $N
-\times d$ matrices and $\Sigma$ is a $d \times d$ diagonal matrix. We set $d =
-300$, similarly to some other word-embedding systems.
+We consider this graph to represent terms and their contexts. In a corpus of
+text, the context of a term would be the terms that appear nearby in the text;
+here, the context is the other nodes it is connected to in ConceptNet. From
+this representation, we can calculate word embeddings directly from the
+ConceptNet graph by following the practical recommendations of
+\citeauthor{levy2015embeddings} \shortcite{levy2015embeddings}.
 
-Our own normalization that we have found to be effective is to re-scale the
-columns of $U$ and $V$ by dividing by their $L_1$ norm, emphasizing components
-that distinguish sparse sets of concepts. This gives the transformed word and
-context embeddings $U'$ and $V'$, which are no longer orthogonal matrices.
+As in Levy et al., we determine the pointwise mutual information of the matrix
+entries with context distributional smoothing, clip the negative values to
+yield positive pointwise mutual information (PPMI), reduce the dimensionality
+of the result to 300 dimensions with truncated SVD, and combine the terms and contexts
+symmetrically into a single matrix of word embeddings. This gives a matrix
+of word embeddings we call ConceptNet-PPMI.
 
-Following \citeauthor{levy2015embeddings}, we combine the terms and their
-contexts symmetrically into a single set of embeddings that can represent
-multi-step connections between terms: $E = (U' + V')\Sigma^{1/2}$. The rows of
-this matrix, re-normalized to unit vectors, are the embeddings of nodes in
-ConceptNet in a representation we call ConceptNet-PPMI.
+We can expand ConceptNet-PPMI to restore the nodes that we pruned away,
+assigning them vectors that are the average of their neighboring nodes.
 
-The process for calculating ConceptNet-PPMI is baroque, but what it represents
-can be intuitive. These embeddings implicitly represent the overall graph
-structure of ConceptNet, and allow us to compute the approximate connectedness
-of any pair of nodes. Nodes are strongly connected when they are connected by
-short paths of edges, possibly many such paths, with high weights. They are
-weakly connected when one must traverse long or low-weight paths of edges to
-get between them. When the dot product of terms in ConceptNet-PPMI is high, it
+These embeddings implicitly represent the overall graph structure of
+ConceptNet, and allow us to compute the approximate connectedness of any pair
+of nodes. Nodes are strongly connected when they are connected by short paths
+of edges, possibly many such paths, with high weights. They are weakly
+connected when one must traverse long or low-weight paths of edges to get
+between them. When the dot product of terms in ConceptNet-PPMI is high, it
 means they are strongly connected in ConceptNet.
 
 \subsection{Combining ConceptNet with Distributional Word Embeddings}
@@ -426,37 +407,33 @@ are missing from one of the vocabularies. For details of this process, we
 refer to the \texttt{conceptnet5.vectors.merge} module in the ConceptNet 5.5
 codebase.
 
-In this paper, we use this retrofitting-and-merging process on the
-word2vec and GloVe embeddings. We do not include ConceptNet-PPMI as an input
-because ConceptNet is already represented in the retrofitting process. As an
-avenue for future expansion, we are experimenting with including distributional
-word embeddings from corpora of non-English text. Preliminary results show that
-this improves the multilingual performance of the embeddings.
+In this paper, we use this retrofitting-and-merging process by retrofitting
+ConceptNet onto the word2vec and GloVe embeddings.  As an avenue for future
+expansion, we are experimenting with including distributional word embeddings
+from corpora of non-English text. Preliminary results show that this improves
+the multilingual performance of the embeddings.
 
-After retrofitting and merging, we have a labeled matrix of word embeddings whose
-vocabulary is derived from word2vec, GloVe, and the pruned ConceptNet graph. At
-this point, we can restore the nodes that we pruned away, assigning them vectors
-that are the average of their neighboring nodes.
+After retrofitting and merging, we have a labeled matrix of word embeddings
+whose vocabulary is derived from word2vec, GloVe, and the pruned ConceptNet
+graph. As in ConceptNet-PPMI, we re-introduce all the nodes from ConceptNet by
+looking up and averaging their neighboring nodes.
 
 \section{Evaluation}
 
-To compare the word-embedding ensemble presented in this paper (ConceptNet
-Numberbatch) to other systems, we will first compare results on intrinsic
-evaluations of the word relatedness metric. We will then apply the word
-embeddings to the downstream tasks of solving proportional analogies and
-choosing the sensible ending to a story, to evaluate whether better embeddings
-translate to better performance on semantic tasks.
+To compare the performance of fully-built systems of word embeddings, we will
+first compare their results on intrinsic evaluations of word relatedness, then
+apply the word embeddings to the downstream tasks of solving proportional
+analogies and choosing the sensible ending to a story, to evaluate whether
+better embeddings translate to better performance on semantic tasks.
 
-We compare ConceptNet Numberbatch to other released systems of word embeddings,
-using their published outputs on their preferred corpus of training text:
-
-\begin{itemize}
-    \item word2vec SGNS, trained on 100 billion words of Google News \cite{mikolov2013word2vec}
-    \item GloVe 1.2, trained on 840 billion tokens of the Common Crawl \cite{pennington2014glove}
-    \item LexVec, a recently-released system trained on the English Wikipedia and NewsCrawl \cite{salle2016lexvec}
-\end{itemize}
-
-We also compare to the ConceptNet PPMI embeddings, showing what performance
+The hybrid system described above is the system we name ConceptNet Numberbatch,
+with the version number 16.09 indicating that it was built in September 2016.
+We now compare results from ConceptNet Numberbatch 16.09 to other systems:
+word2vec SGNS trained on Google News \cite{mikolov2013word2vec}, GloVe 1.2
+trained on the Common Crawl \cite{pennington2014glove}, and a recently-released
+system that was not used in ConceptNet Numberbatch: LexVec, whose embeddings
+are trained on the English Wikipedia and NewsCrawl \cite{salle2016lexvec}.
+Additionally, we compare to the ConceptNet-PPMI embeddings, showing what performance
 can be achieved with ConceptNet and no other data.
 
 \subsection{Evaluations of Word Relatedness}
@@ -552,7 +529,7 @@ system can achieve its best performance. The grid search is performed on
 odd-numbered questions, holding out the even-numbered questions for a final
 evaluation.
 
-The weights chosen for ConceptNet Numberbatch were $w_1 = 0.35$ and $w_2 =
+The weights found for ConceptNet Numberbatch were $w_1 = 0.35$ and $w_2 =
 0.65$, with other word embeddings choosing similar values. This indicates,
 surprisingly, that the transposed form of the analogy was often more important
 than the directly stated form of the analogy for choosing the best answer pair.
