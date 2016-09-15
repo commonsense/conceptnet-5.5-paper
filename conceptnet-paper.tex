@@ -238,12 +238,9 @@ A term that is imported from another knowledge graph will be connected to
 ConceptNet nodes via the pseudo-relation \emph{ExternalURL}, pointing to an
 absolute URL that represents that term in that external resource.  This
 preserves the provenance of the data and enables looking up what the
-untransformed data was.
-
-As ConceptNet terms can also be given absolute URLs (by prefixing their local
-URI with the domain name \url{http://api.conceptnet.io}), this allows
-ConceptNet to connect bidirectionally to the broader ecosystem of Linked Open
-Data.
+untransformed data was. ConceptNet terms can also be represented as absolute URLs,
+so this allows ConceptNet to connect bidirectionally to the broader ecosystem of
+Linked Open Data.
 
 \section{Related Work}
 
@@ -520,8 +517,8 @@ only one of which makes sense.
 This task is distinguished by being very challenging for computers but very
 easy for humans, because of the extent that it relies on implicit, common sense
 knowledge. Most systems that have been evaluated on the Story Cloze Test
-score only marginally above the random baseline of 50\%, while a typical
-human agrees with the gold standard answers 100\% of the time.
+score only marginally above the random baseline of 50\%, while human
+agreement is near 100\%.
 
 Our preliminary attempt to apply ConceptNet Numberbatch to the Story Cloze Test
 is to use a very simple ``bag-of-vectors'' model, by averaging the
@@ -594,18 +591,16 @@ This also compares to the performance of the average human college applicant,
 said by Turney and Littman to be 57.0\%.
 
 The analogy results show that our word embeddings have a level of understanding
-of words that has traditionally been sought in college applicants. This is the
-case even though the system, like many others, is only adding and subtracting
-values that measure the relatedness of terms; it uses no particular
-representation of what the relationships between these terms actually are.
-
-It seems likely that there exists a way to take ConceptNet's relation labels
-into account and do even better at analogies. We have not yet found such a
-method that performs better than a simple comparison of word relatedness, and
-in ongoing research, we are continuing to look for one. But for now, we have
+of words that has traditionally been sought in college applicants.  We have
 shown that knowledge-informed word embeddings are up to the challenge of SAT
 analogies, and do not need to be relegated to a synthetic analogy data set
 designed only for testing word embeddings.
+
+This is the case even though the system, like many others, is only adding and
+subtracting values that measure the relatedness of terms; it uses no particular
+representation of what the relationships between these terms actually are.
+There is likely a way to take ConceptNet's relation labels into account and do
+even better at analogies.
 
 The performance of our system on the Story Cloze Test was acceptable but
 unremarkable.  ConceptNet Numberbatch chose the correct ending 59.5\% of the
@@ -643,13 +638,6 @@ consider including a source of relational knowledge, or starting from a
 pre-trained set of word embeddings that has taken relational knowledge into
 account. One of the many goals of ConceptNet is to provide this knowledge in a
 convenient form that can be applied across many domains and many languages.
-
-\section{Availability of This Code and Data}
-
-The code for building and evaluating ConceptNet and its embeddings is part of
-the ConceptNet 5 codebase, developed at \url{http://github.com/commonsense/conceptnet5}.
-The output embeddings, ConceptNet Numberbatch 16.09, can be downloaded from links
-provided at \url{https://github.com/commonsense/conceptnet-numberbatch}.
 
 \section{Acknowledgments}
 
