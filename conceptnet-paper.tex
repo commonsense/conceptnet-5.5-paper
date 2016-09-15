@@ -344,12 +344,11 @@ $$\Psi(Q) = \sum_{i=1}^{n}\left[
 \citeauthor{faruqui2015retrofitting} give a simple iterative process to minimize
 this function over the vocabulary of the original embeddings.
 
-The process of ``expanded retrofitting'', first described in
-\cite{speer2016ensemble}, can optimize this objective over a larger vocabulary,
-including terms from the knowledge graph that do not appear in the vocabulary
-of the word embeddings. This effectively sets $\alpha_i = 0$ for terms whose
-original values are undefined. We set $\beta_{ij}$ according to the weights
-of the edges in ConceptNet.
+The process of ``expanded retrofitting'' \cite{speer2016ensemble} can optimize
+this objective over a larger vocabulary, including terms from the knowledge
+graph that do not appear in the vocabulary of the word embeddings. This
+effectively sets $\alpha_i = 0$ for terms whose original values are undefined.
+We set $\beta_{ij}$ according to the weights of the edges in ConceptNet.
 
 The particular benefit of expanded retrofitting to ConceptNet is that it can
 benefit from the multilingual connections in ConceptNet. It learns more about
