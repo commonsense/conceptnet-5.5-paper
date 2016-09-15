@@ -61,14 +61,14 @@ ConceptNet represents relations between words such as:
     \item O \emph{alimento} é usado para \emph{comer} [Food is used for eating].
 \end{itemize}
 
-In this paper, we will concisely assertions such as the above as triples of
+In this paper, we will concisely represent assertions such as the above as triples of
 their start node, relation label, and end node: the assertion that ``a dog has
 a tail'' can be represented as (\emph{dog}, \emph{HasA}, \emph{tail}).
 
 ConceptNet also represents links between knowledge resources. In addition to
 its own knowledge about the English term \emph{astronomy}, for example,
 ConceptNet contains links to URLs that define \emph{astronomy} in WordNet,
-Wiktionary, UMBEL, and DBPedia.
+Wiktionary, OpenCyc, and DBPedia.
 
 The graph-structured knowledge in ConceptNet can be particularly useful to NLP
 learning algorithms, particularly those based on word embeddings, such as
@@ -83,16 +83,14 @@ itself.
 
 ConceptNet Numberbatch performs significantly better than other systems across
 many evaluations of word relatedness, and this increase in performance
-translates to improvements on downstream tasks such as analogies.  On Turney's
+translates to improvements on downstream tasks such as analogies.  On a
 corpus of SAT-style analogy questions \cite{turney2005lra}, its accuracy of
-56.4\% is slightly higher than the previous best system (Turney's LRA) and only
+56.4\% is slightly higher than the previous best system, Turney's LRA, and only
 slightly lower than the performance of the average human test-taker.
 
 Building word embeddings is not the only application of ConceptNet, but it is a
 way to apply ConceptNet that achieves clear benefits and is compatible with
-ongoing research in distributional semantics. This shows the continued relevance of
-ConceptNet, and of explicitly collecting knowledge to improve the computational
-understanding of semantics.
+ongoing research in distributional semantics.
 
 In this paper, we will begin by describing ConceptNet 5.5 and its features,
 show how to use ConceptNet alone as a semantic space and a measure of word
@@ -100,6 +98,16 @@ relatedness, and then proceed to describe and evaluate the hybrid system
 ConceptNet Numberbatch on these various semantic tasks.
 
 \section{Structure of ConceptNet}\label{structure-of-conceptnet}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=3.3in]{cn5-screenshot.png}
+\caption{
+    ConceptNet's browsable interface (conceptnet.io) shows
+    facts about the English word ``bicycle''.
+}
+\label{screenshot}
+\end{figure}
 
 \subsection{Knowledge Sources}\label{knowledge-sources}
 
@@ -109,7 +117,6 @@ ConceptNet 5.5 is built from the following sources:
 \item
   Facts acquired from Open Mind Common Sense (OMCS) \cite{singh2002omcs}
   and sister projects in other languages \cite{anacleto2006portuguese}
-  \cite{eckhardt2008kid}
 \item
   Information extracted from parsing Wiktionary, in multiple languages,
   with a custom parser (``Wikiparsec'')
@@ -123,9 +130,8 @@ ConceptNet 5.5 is built from the following sources:
 \item
   JMDict \cite{breen2004jmdict}, a Japanese-multilingual dictionary
 \item
-  OpenCyc \cite{matuszek2006cyc}, a hierarchy of hypernyms provided by
-  Cyc, a system that represents common sense knowledge in predicate
-  logic
+  OpenCyc, a hierarchy of hypernyms provided by
+  Cyc \cite{lenat1989cyc}, a system that represents common sense knowledge in predicate logic
 \item
   A subset of DBPedia \cite{auer2007dbpedia}, a network of facts
   extracted from Wikipedia infoboxes
@@ -169,6 +175,8 @@ edges is unimportant. The assertion (\emph{A}, \emph{SimilarTo},
 \emph{B}) is considered equivalent to (\emph{B}, \emph{SimilarTo},
 \emph{A}).
 
+An example of edges in ConceptNet, in a browsable interface that groups
+them by their relation, appears in Figure~\ref{screenshot}.
 
 \subsection{Term Representation}\label{term-representation}
 
@@ -194,7 +202,6 @@ assertions above are now linked by the third assertion (\emph{driving},
 \emph{FormOf}, \emph{drive}), and both ``driving'' and ``drive'' can be looked
 up in ConceptNet.
 
-
 \subsection{Vocabulary}\label{vocabulary}
 
 When building a knowledge graph, the decision of what a node should
@@ -203,14 +210,13 @@ implications that can make linking and importing other resources
 non-trivial, because different resources make different decisions about
 their representation.
 
-In ConceptNet, a node is a word or phrase of a natural language, often a
-common word in its undisambiguated form. The word ``lead'' in English is
-a term in ConceptNet, represented by the URI \texttt{/c/en/lead}, even
-though it has multiple meanings. The advantage of ambiguous terms is
-that they can be extracted easily from natural language, which is also
-ambiguous. This representation is equivalent to that used by systems
-that learn distributional semantics from text, such as word2vec
-\cite{mikolov2013word2vec}.
+In ConceptNet, a node is a word or phrase of a natural language, often a common
+word in its undisambiguated form. The word ``lead'' in English is a term in
+ConceptNet, represented by the URI \texttt{/c/en/lead}, even though it has
+multiple meanings. The advantage of ambiguous terms is that they can be
+extracted easily from natural language, which is also ambiguous. This ambiguous
+representation is equivalent to that used by systems that learn distributional
+semantics from text.
 
 ConceptNet's representation allows for more specific, disambiguated
 versions of a term. The URI \texttt{/c/en/lead/n} refers to noun senses
@@ -235,10 +241,10 @@ absolute URL that represents that term in that external resource.  This
 preserves the provenance of the data and enables looking up what the
 untransformed data was.
 
-As ConceptNet terms can also be given absolute URLs
-(by prefixing their local URI with the domain name
-\url{http://api.conceptnet.io}), this allows ConceptNet to participate in the
-broader ecosystem of Linked Open Data.
+As ConceptNet terms can also be given absolute URLs (by prefixing their local
+URI with the domain name \url{http://api.conceptnet.io}), this allows
+ConceptNet to connect bidirectionally to the broader ecosystem of Linked Open
+Data.
 
 \section{Related Work}
 
@@ -247,7 +253,7 @@ Common Sense project \cite{singh2002omcs}, a large common sense knowledge base
 of the most basic things a person knows.
 
 Many projects strive to create lexical resources of general knowledge.  Cyc
-\cite{matuszek2006cyc} has built an ontology of common-sense knowledge in
+\cite{lenat1989cyc} has built an ontology of common-sense knowledge in
 predicate logic form over the decades. DBPedia \cite{auer2007dbpedia} extracts
 knowledge from Wikipedia infoboxes, providing a large number of facts, largely
 focused on named entities that have Wikipedia articles. The Google Knowledge
