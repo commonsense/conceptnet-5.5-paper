@@ -459,16 +459,11 @@ MEN-3000 \cite{bruni2014men}, a large crowd-sourced ranking of common words; RW
 a smaller evaluation that has been used as a benchmark for many methods; and MTurk-771
 \cite{halawi2012mturk}, another crowd-sourced evaluation of a variety of words.
 
-%Evaluations of word relatedness in languages besides English tend to be smaller
-%and less frequently used, but they are important to show that the system has
-%learned reasonable representations in other languages.
-Of the systems we compare
-to, only fastText \cite{fasttext} has published multilingual results.
-We compare our system to fastText on the same non-English evaluations it
-reports: Gur350, Gur65, and ZG222 in German \cite{gurevych2005german}
-\cite{zesch2006zg}, RG65 in French \cite{joubarne2011french}, and WS353 in Spanish
-\cite{hassan2009crosslingual}. We use the reported fastText results here
-instead of attempting to reproduce its input. In this evaluation {\em only}, we
+We demonstrate our multilingual performance with the Spanish translation of
+WordSim-353 \cite{hassan2009crosslingual} and the set of 350 German word pairs
+known as Gur350 \cite{gurevych2005german}.  The systems we compare to have only
+released their data in English, but we can at least compare to the multilingual
+results {\em reported} by fastText \cite{fasttext}. In this evaluation only, we
 drop pairs that contain OOV words from the ranking, to match fastText's
 procedure.
 
@@ -490,8 +485,8 @@ out some test data until it was time to include results in this paper:
 \item
     We did not use MTurk-771 in development, holding out the entire set
     as a final test, showing that ConceptNet Numberbatch performs well on a
-    previously-unseen evaluation. We similarly did not use any multilingual
-    datasets besides the Spanish WS353 in evaluation.
+    previously-unseen evaluation.
+\item Similarly, we did not use the Gur350 German pairs in development.
 \end{itemize}
 
 \subsection{Solving SAT-style Analogies}
