@@ -420,24 +420,16 @@ better embeddings translate to better performance on semantic tasks.
 The hybrid system described above is the system we name ConceptNet Numberbatch,
 with the version number 16.09 indicating that it was built in September 2016.
 We now compare results from ConceptNet Numberbatch 16.09 to other systems, both
-those that were used in building ConceptNet Numberbatch and two recently-released
-systems that were not. The systems we evaluate are:
+those that were used in building ConceptNet Numberbatch and a recently-released
+system that was not. The systems we evaluate are:
 
 \begin{itemize}
     \item word2vec SGNS \cite{mikolov2013word2vec}, trained on Google News text
     \item GloVe 1.2 \cite{pennington2014glove}, trained on the Common Crawl
     \item LexVec \cite{salle2016lexvec}, trained on the English Wikipedia and NewsCrawl 2014
-    \item fastText \cite{fasttext}, trained on the English Wikipedia
     \item ConceptNet-PPMI, described here and trained on ConceptNet 5.5 alone
     \item ConceptNet Numberbatch 16.09, the hybrid of ConceptNet 5.5, word2vec, and GloVe described here
 \end{itemize}
-
-fastText does not provide pre-trained word embeddings, but does provide code
-that can be run on the text of the English Wikipedia, producing embeddings that
-approximately reproduce its reported results. We used the Wikipedia export from
-December 8, 2014, whose text we extracted with a small utility called {\tt
-wiki2text}\footnote{\url{https://github.com/rspeer/wiki2text}}, followed by
-fastText's {\tt normalize\_text.sh} preprocessor.
 
 \subsection{Evaluations of Word Relatedness}
 \label{intrinsic-evaluations}
@@ -461,11 +453,9 @@ a smaller evaluation that has been used as a benchmark for many methods; and MTu
 
 We demonstrate our multilingual performance with the Spanish translation of
 WordSim-353 \cite{hassan2009crosslingual} and the set of 350 German word pairs
-known as Gur350 \cite{gurevych2005german}.  The systems we compare to have only
-released their data in English, but we can at least compare to the multilingual
-results {\em reported} by fastText \cite{fasttext}. In this evaluation only, we
-drop pairs that contain OOV words from the ranking, to match fastText's
-procedure.
+known as Gur350 \cite{gurevych2005german}. The systems we compare to have only
+released their data in English, so we instead look up the published results of
+other systems as a comparison.
 
 To avoid manually overfitting by designing our semantic space around a
 particular evaluation, we experimented using smaller development sets, holding
@@ -625,8 +615,7 @@ otherwise.
 On all of the four word-relatedness evaluations, ConceptNet Numberbatch 16.09
 (the complete system described in this paper) is state of the art, performing
 better than all other systems evaluated to an extent that exceeds the
-confidence interval of the choice of questions. It outperforms even very
-recently released results such as fastText, and its high scores on both the
+confidence interval of the choice of questions. Its high scores on both the
 Rare Words dataset and the crowd-sourced MEN-3000 and MTurk-771 datasets shows
 both the breadth and the depth of its understanding of words.
 
@@ -711,7 +700,7 @@ stories should get more than 59\% correct.
 \subsection{Conclusion}
 
 We have compared word embeddings that represent only distributional semantics
-(word2vec, GloVe, LexVec, and fastText), word embeddings that represent only
+(word2vec, GloVe, and LexVec), word embeddings that represent only
 relational knowledge (ConceptNet PPMI), and the combination of the two
 (ConceptNet Numberbatch), and we have shown that the whole is more than the sum
 of its parts.
