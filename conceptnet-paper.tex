@@ -147,6 +147,13 @@ ConceptNet so far, it has converged too slowly to experiment with, but this
 could be overcome eventually with some optimization and additional computing
 power.
 
+The ``expanded retrofitting'' method we use for propagating word embeddings
+beyond their original vocabulary, including into other languages, is a
+generalization of retrofitting \cite{faruqui2015retrofitting}. The multilingual
+aspect is similar to the work of \citeauthor{xiao2014distributed}
+\shortcite{xiao2014distributed}, who similarly build multilingual embeddings
+from crowd-sourced Wiktionary entries.
+
 \section{Structure of ConceptNet}\label{structure-of-conceptnet}
 
 \begin{figure}[t]
@@ -232,8 +239,8 @@ The core relations are:
         \emph{SenseOf}, \emph{SymbolOf}, and \emph{UsedFor}
 \end{itemize}
 
-Definitions and examples of these relations appear in the ConceptNet 5.5
-documentation at \url{https://github.com/commonsense/conceptnet5/wiki/Relations}.
+Definitions and examples of these relations appear in a page of the ConceptNet 5.5
+documentation\footnote{\url{https://github.com/commonsense/conceptnet5/wiki/Relations}}.
 
 Relations with specific semantics, such as \emph{UsedFor} and
 \emph{HasPrerequisite}, tend to connect common words and phrases, while
