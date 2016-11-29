@@ -371,8 +371,9 @@ We set $\beta_{ij}$ according to the weights of the edges in ConceptNet.
 
 The particular benefit of expanded retrofitting to ConceptNet is that it can
 benefit from the multilingual connections in ConceptNet. It learns more about
-English words via their translations in other languages, and gives these
-foreign-language terms embeddings in the same space as the English terms.
+English words via their translations in other languages, and also gives these
+foreign-language terms useful embeddings in the same space as the English
+terms.
 
 We add one more step to retrofitting, which is to subtract the mean of the
 vectors that result from retrofitting, then re-normalize them to unit vectors.
@@ -419,9 +420,10 @@ better embeddings translate to better performance on semantic tasks.
 
 The hybrid system described above is the system we name ConceptNet Numberbatch,
 with the version number 16.09 indicating that it was built in September 2016.
-We now compare results from ConceptNet Numberbatch 16.09 to other systems, both
-those that were used in building ConceptNet Numberbatch and a recently-released
-system that was not. The systems we evaluate are:
+We now compare results from ConceptNet Numberbatch 16.09 to other systems that
+make their word embeddings available, both those that were used in building
+ConceptNet Numberbatch and a recently-released system that was not. The systems
+we evaluate are:
 
 \begin{itemize}
     \item word2vec SGNS \cite{mikolov2013word2vec}, trained on Google News text
@@ -451,12 +453,6 @@ MEN-3000 \cite{bruni2014men}, a large crowd-sourced ranking of common words; RW
 a smaller evaluation that has been used as a benchmark for many methods; and MTurk-771
 \cite{halawi2012mturk}, another crowd-sourced evaluation of a variety of words.
 
-We demonstrate our multilingual performance with the Spanish translation of
-WordSim-353 \cite{hassan2009crosslingual} and the set of 350 German word pairs
-known as Gur350 \cite{gurevych2005german}. The systems we compare to have only
-released their data in English, so we instead look up the published results of
-other systems as a comparison.
-
 To avoid manually overfitting by designing our semantic space around a
 particular evaluation, we experimented using smaller development sets, holding
 out some test data until it was time to include results in this paper:
@@ -470,14 +466,23 @@ out some test data until it was time to include results in this paper:
     a development set and held out the other 1/3 (every third line of the file,
     starting with the third).
 \item
-    We used all of WordSim-353 in development, examining its results both in
-    English and in its Spanish translation.
+    We used all of WordSim-353 in development. We examine its results both in
+    English and in its Spanish translation \cite{hassan2009crosslingual}.
 \item
     We did not use MTurk-771 in development, holding out the entire set
     as a final test, showing that ConceptNet Numberbatch performs well on a
     previously-unseen evaluation.
-\item Similarly, we did not use the Gur350 German pairs in development.
 \end{itemize}
+
+We use the Spanish WordSim-353 as an example of a prominent non-English evaluation,
+indicating that expanded retrofitting is sufficient to learn vectors for
+non-English languages, even when all the distributional semantics takes place in
+English. However, a thorough multilingual evaluation is beyond the scope of
+this paper; the systems we compare to have only made English vectors available,
+and it would add considerable complexity to the evaluation to reproduce other
+systems of multilingual embeddings, accounting for their various ways of
+handling morphology and OOV words.
+
 
 \subsection{Solving SAT-style Analogies}
 
@@ -587,6 +592,7 @@ MEN-3000 ($\rho$)              & .853 & .861 & .861 \\
 Rare Words ($\rho$)            & .603 & .578 & .596 \\
 MTurk-771 ($\rho$)             &  --- & .804 & .804 \\
 WordSim-353 ($\rho$)           & .827 &  --- & .827 \\
+WordSim-353 Spanish ($\rho$)   & .685 &  --- & .685 \\
 Story Cloze Test (acc)         & .604 & .595 & .595 \\
 SAT Analogies (acc)            & .545 & .583 & .564
 \end{tabular}
@@ -667,7 +673,8 @@ of real SAT analogies; they perform slightly better than non-word-embedding
 systems on the same evaluation, when previous embeddings perform significantly
 worse. In practice, recent word embeddings have instead been evaluated on
 simpler, synthetic analogy data sets \cite{mikolov2013word2vec}, and have not
-been compared to other methods of solving analogies.
+usually been compared to existing non-embedding-based methods of solving
+analogies.
 
 We achieve this performance even though the system, like other systems that
 form analogies from word embeddings, is only adding and subtracting values that
@@ -707,9 +714,9 @@ of its parts.
 
 ConceptNet continues to be important in a field that has come to focus on word
 embeddings, because word embeddings can benefit from what ConceptNet knows.
-ConceptNet can make word embeddings more robust and more human-like, as shown
-by the state-of-the-art results that ConceptNet Numberbatch achieves at
-matching human judgments on multiple evaluations.
+ConceptNet can make word embeddings more robust and more correlated with human
+judgments, as shown by the state-of-the-art results that ConceptNet Numberbatch
+achieves at matching human annotators on multiple evaluations.
 
 Any technique built on word embeddings should
 consider including a source of relational knowledge, or starting from a
@@ -720,16 +727,18 @@ convenient form that can be applied across many domains and many languages.
 \section{Availability of the Code and Data}
 
 The code and documentation of ConceptNet 5.5 can be found on GitHub at
-\url{https://github.com/commonsense/conceptnet5}, and its contents can be browsed at
-\url{http://conceptnet.io}.  The full build process, as well as the evaluation
-graph, can be reproduced using Snakemake \cite{koster2012snakemake}.  The version of the
-repository as of the submission of this paper has been tagged as {\tt
-aaai2007}.
+\url{https://github.com/commonsense/conceptnet5}, and the knowledge graph can
+be browsed at \url{http://conceptnet.io}.  The full build process, as well as
+the evaluation graph, can be reproduced using the instructions included in the
+README file for using Snakemake, a build system for data science
+\cite{koster2012snakemake}, and optionally using Docker Compose to reproduce
+the system environment.  The version of the repository as of the submission of
+this paper has been tagged as {\tt aaai2007}.
 
-The word embeddings that resulted from this build process in September 2016 are
-the ones evaluated in this paper; they can be downloaded as pre-built
-embeddings from \url{https://github.com/commonsense/conceptnet-numberbatch},
-tag {\tt 16.09}.
+The ConceptNet Numberbatch word embeddings that resulted from this build
+process in September 2016 are the ones evaluated in this paper; they can be
+downloaded as pre-built embeddings from
+\url{https://github.com/commonsense/conceptnet-numberbatch}, tag {\tt 16.09}.
 
 \section{Acknowledgments}
 
