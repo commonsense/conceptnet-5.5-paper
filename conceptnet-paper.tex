@@ -20,13 +20,27 @@
 \setlength{\pdfpagewidth}{8.5in}
 \setlength{\pdfpageheight}{11in}
 \pdfinfo{
-/Title (Insert Your Title Here)
-/Author (Put All Your Authors Here, Separated by Commas)}
+/Title (ConceptNet 5.5: An Open Multilingual Graph of General Knowledge)
+/Author (Robert Speer, Joshua Chin, Catherine Havasi)}
 \setcounter{secnumdepth}{0}
 \begin{document}
 
 \title{ConceptNet 5.5: An Open Multilingual Graph of General Knowledge}
-\author{Author list withheld for blind review}
+\author{Robert Speer\\
+    Luminoso Technologies, Inc.\\
+    675 Massachusetts Avenue\\
+    Cambridge, MA 02139
+\And
+    Joshua Chin\\
+    Union College\\
+    807 Union St.\\
+    Schenectady, NY 12308\\
+\And
+    Catherine Havasi\\
+    Luminoso Technologies, Inc.\\
+    675 Massachusetts Avenue\\
+    Cambridge, MA 02139
+}
 
 \maketitle
 
@@ -100,7 +114,8 @@ hybrid system ConceptNet Numberbatch on these various semantic tasks.
 
 ConceptNet is the knowledge graph version of the Open Mind
 Common Sense project \cite{singh2002omcs}, a common sense knowledge base
-of the most basic things a person knows.
+of the most basic things a person knows. It was last published as version
+5.2 \cite{speer2013conceptnet}.
 
 Many projects strive to create lexical resources of general knowledge.  Cyc
 \cite{lenat1989cyc} has built an ontology of common-sense knowledge in
@@ -146,13 +161,6 @@ seems extremely relevant to ConceptNet. In our attempt to implement it on
 ConceptNet so far, it has converged too slowly to experiment with, but this
 could be overcome eventually with some optimization and additional computing
 power.
-
-The ``expanded retrofitting'' method we use for propagating word embeddings
-beyond their original vocabulary, including into other languages, is a
-generalization of retrofitting \cite{faruqui2015retrofitting}. The multilingual
-aspect is similar to the work of \citeauthor{xiao2014distributed}
-\shortcite{xiao2014distributed}, who similarly build multilingual embeddings
-from crowd-sourced Wiktionary entries.
 
 \section{Structure of ConceptNet}\label{structure-of-conceptnet}
 
@@ -380,7 +388,9 @@ The particular benefit of expanded retrofitting to ConceptNet is that it can
 benefit from the multilingual connections in ConceptNet. It learns more about
 English words via their translations in other languages, and also gives these
 foreign-language terms useful embeddings in the same space as the English
-terms.
+terms. The effect is similar to the work of \citeauthor{xiao2014distributed}
+\shortcite{xiao2014distributed}, who also propagate multilingual embeddings
+using crowd-sourced Wiktionary entries.
 
 We add one more step to retrofitting, which is to subtract the mean of the
 vectors that result from retrofitting, then re-normalize them to unit vectors.
