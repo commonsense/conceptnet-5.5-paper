@@ -98,7 +98,8 @@ ConceptNet Numberbatch performs significantly better than other systems across
 many evaluations of word relatedness, and this increase in performance
 translates to improvements on downstream tasks such as analogies.  On a
 corpus of SAT-style analogy questions \cite{turney2006lra}, its accuracy of
-56.4\% is slightly higher than the previous best system, Turney's LRA, and only
+56.1\% outperforms other systems based on word embeddings and ties the
+previous best overall system, Turney's LRA. This level of accuracy is only
 slightly lower than the performance of the average human test-taker.
 
 Building word embeddings is not the only application of ConceptNet, but it is a
@@ -644,7 +645,7 @@ both the breadth and the depth of its understanding of words.
 
 \subsection{SAT Analogies}
 
-ConceptNet Numberbatch performed the best at SAT analogies, getting 56.4\%
+ConceptNet Numberbatch performed the best at SAT analogies, getting 56.1\%
 of the questions correct (58.3\% on the half that was held out for final
 testing). These analogy results are significantly better than analogies based
 on other word embeddings, evaluated in the same framework, to an extent that
@@ -659,31 +660,32 @@ exceeds the 95\% confidence interval.
     word2vec (2013)          & .463 & .412 -- .513 \\
     SuperSim (2013)          & .548 & .496 -- .599 \\
     LRA (2006)               & .561 & .510 -- .612 \\
-    ConceptNet Numberbatch   & .564 & .514 -- .614
+    ConceptNet Numberbatch   & .561 & .510 -- .612
 \end{tabular}
     \caption{The accuracy of different techniques for solving SAT analogies,
     including ConceptNet Numberbatch 16.09, our hybrid system.}
 \label{analogy-eval-table}
 \end{table}
 
-The analogy results also slightly outperform the performance of best-in-class
-systems on this evaluation\footnote{See \url{http://www.aclweb.org/aclwiki/index.php?title=SAT_Analogy_Questions} for a
+The analogy results also tie or slightly outperform the performance of
+best-in-class systems on this evaluation\footnote{See
+\url{http://www.aclweb.org/aclwiki/index.php?title=SAT_Analogy_Questions} for a
 thorough list of results.}. Table~\ref{analogy-eval-table} compares our results
 to the other systems introduced in the ``Solving SAT-Style Analogies'' section:
 BagPack \cite{herdagdelen2009bagpack}, the previous use of ConceptNet on this
 evaluation; LRA \cite{turney2006lra}, the system whose record has stood for a
-decade, which searches the Web during its evaluation; and SuperSim
-\cite{turney2013supersim}, the more recent system that held the record among
-self-contained systems. We also include the optimized results we found for
-word2vec \cite{mikolov2013word2vec}, which scored best among other
+decade, which spends nine days searching the Web during its evaluation; and
+SuperSim \cite{turney2013supersim}, the more recent system that held the record
+among self-contained systems. We also include the optimized results we found
+for word2vec \cite{mikolov2013word2vec}, which scored best among other
 word-embedding systems on this task.
 
-The results of SuperSim, LRA, and our ConceptNet Numberbatch are within each
-other's 95\% confidence intervals, indicating that the ranking of the results
-could likely change with a different choice of questions. Our score of 56.4\%
-indicates a possible improvement over these best-in-class systems, and also
-edges nearer to the performance of the average human college applicant on these
-questions, said to be 57.0\% \cite{turney2006lra}.
+The results of three systems -- SuperSim, LRA, and our ConceptNet Numberbatch
+-- are all within each other's 95\% confidence intervals, indicating that the
+ranking of the results could easily change with a different selection of
+questions. Our score of 56.1\% is also within the confidence interval of the
+performance of the average human college applicant on these questions, said to
+be 57.0\% \cite{turney2006lra}.
 
 We have shown that knowledge-informed word embeddings are up to the challenge
 of real SAT analogies; they perform slightly better than non-word-embedding
