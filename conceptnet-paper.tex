@@ -440,8 +440,8 @@ The hybrid system described above is the system we name ConceptNet Numberbatch,
 with the version number 16.09 indicating that it was built in September 2016.
 We now compare results from ConceptNet Numberbatch 16.09 to other systems that
 make their word embeddings available, both those that were used in building
-ConceptNet Numberbatch and a recently-released system that was not. The systems
-we evaluate are:
+ConceptNet Numberbatch and a recently-released system, LexVec, that was not.
+The systems we evaluate are:
 
 \begin{itemize}
     \item word2vec SGNS \cite{mikolov2013word2vec}, trained on Google News text
@@ -535,7 +535,8 @@ amount of relatedness between $a_1$ and $a_2$, and between $b_1$ and $b_2$,
 regardless of what the other terms are. Also, in many cases, a satisfying
 analogy will still make sense when it is transposed to ``$a_1$ is to $a_2$ as
 $b_1$ is to $b_2$''. The analogy ``fire : hot :: ice : cold'', for example, can
-be transposed to ``fire : ice :: hot : cold''.
+be transposed to ``fire : ice :: hot : cold''. Recognizing this structure helps
+in picking the best answer to difficult analogy questions.
 
 This gives us three components that we can weigh to evaluate whether a pair
 ($a_2$, $b_2$) completes an analogy: their separate similarity to $a_1$ and
@@ -555,13 +556,12 @@ relationships in the analogy questions, and also on how these relationships
 appear in the vector space. We optimize these parameters separately for each
 system we test, using grid search over a number of possible values so that each
 system can achieve its best performance. The grid search is performed on
-odd-numbered questions, holding out the even-numbered questions for a final
-evaluation.
+odd-numbered questions, holding out the even-numbered questions as a test set.
 
-The weights found for ConceptNet Numberbatch were $w_1 = 0.35$ and $w_2 =
-0.65$, with other word embeddings choosing similar values. This indicates,
-surprisingly, that the transposed form of the analogy was often more important
-than the directly stated form of the analogy for choosing the best answer pair.
+The weights found for ConceptNet Numberbatch 16.09 were $w_1 = 0.2$ and $w_2 =
+0.6$.  This indicates, surprisingly, that the comparisons being made by the
+transposed form of the analogy were often more important than the directly
+stated form of the analogy for choosing the best answer pair.
 
 \subsection{An Evaluation of Common-Sense Stories}
 \label{story-evaluation}
@@ -606,13 +606,13 @@ but it recognizes that sensible stories do not suddenly change topic.
 \begin{tabular}{lrrr}
 \bf Evaluation     & \bf Dev & \bf Test & \bf Final \\
 \hline
-MEN-3000 ($\rho$)              & .853 & .861 & .861 \\
-Rare Words ($\rho$)            & .603 & .578 & .596 \\
-MTurk-771 ($\rho$)             &  --- & .804 & .804 \\
-WordSim-353 ($\rho$)           & .827 &  --- & .827 \\
+MEN-3000 ($\rho$)              & .859 & .866 & .866 \\
+Rare Words ($\rho$)            & .609 & .586 & .601 \\
+MTurk-771 ($\rho$)             &  --- & .810 & .810 \\
+WordSim-353 ($\rho$)           & .828 &  --- & .828 \\
 WordSim-353 Spanish ($\rho$)   & .685 &  --- & .685 \\
-Story Cloze Test (acc)         & .604 & .595 & .595 \\
-SAT Analogies (acc)            & .545 & .583 & .564
+Story Cloze Test (acc)         & .604 & .594 & .594 \\
+SAT Analogies (acc)            & .535 & .588 & .561
 \end{tabular}
 \caption{The Spearman correlation ($\rho$) or accuracy (acc) of ConceptNet Numberbatch 16.09, our hybrid system,
 on data used in development and data held out for testing.}
@@ -631,25 +631,26 @@ confidence intervals calculated using the binomial exact test.
 
 The scores of our system on all these evaluations appear in
 Table~\ref{eval-table}, including a development/test breakdown that shows no
-noticeable overfitting. The ``Final'' column is meant for comparisons to other
-papers and used in the graph. It uses the standard test set if it exists (which
-is the case for MEN-3000 and Story Cloze), or all of the data
-otherwise.
+apparent overfitting. The ``Final'' column is meant for comparisons to other
+papers and used in the graph. It uses the standard test set that other
+publications use, if it exists (which is the case for MEN-3000 and Story
+Cloze), or all of the data otherwise.
 
 On all of the four word-relatedness evaluations, ConceptNet Numberbatch 16.09
 (the complete system described in this paper) is state of the art, performing
 better than all other systems evaluated to an extent that exceeds the
 confidence interval of the choice of questions. Its high scores on both the
-Rare Words dataset and the crowd-sourced MEN-3000 and MTurk-771 datasets shows
-both the breadth and the depth of its understanding of words.
+Rare Words dataset and the crowd-sourced MEN-3000 and MTurk-771 datasets,
+exceeding the performance of other embeddings with high confidence, shows both
+the breadth and the depth of its understanding of words.
 
 \subsection{SAT Analogies}
 
-ConceptNet Numberbatch performed the best at SAT analogies, getting 56.1\%
-of the questions correct (58.3\% on the half that was held out for final
-testing). These analogy results are significantly better than analogies based
-on other word embeddings, evaluated in the same framework, to an extent that
-exceeds the 95\% confidence interval.
+ConceptNet Numberbatch performed the best among the word-embedding systems at
+SAT analogies, getting 56.1\% of the questions correct (58.8\% on the half that
+was held out for final testing).  These analogy results are significantly
+better than analogies based on other word embeddings, evaluated in the same
+framework, to an extent that exceeds the 95\% confidence interval.
 
 \begin{table}[t]
 \centering
