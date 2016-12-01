@@ -1,6 +1,6 @@
 PDFLATEX = pdflatex -shell-escape
 
 rule build_latex
-  command = $PDFLATEX conceptnet-paper && $PDFLATEX conceptnet-paper && bibtex conceptnet-paper && $PDFLATEX conceptnet-paper && $PDFLATEX conceptnet-paper && $PDFLATEX conceptnet-paper || rm conceptnet-paper.pdf conceptnet-paper.bbl
+  command = $PDFLATEX speer-conceptnet && $PDFLATEX speer-conceptnet && bibtex speer-conceptnet && $PDFLATEX speer-conceptnet && $PDFLATEX speer-conceptnet && $PDFLATEX speer-conceptnet || rm speer-conceptnet.pdf speer-conceptnet.bbl
 
-build conceptnet-paper.pdf: build_latex conceptnet-paper.tex | conceptnet-paper.bib eval-graph.pdf
+build speer-conceptnet.pdf: build_latex speer-conceptnet.tex | speer-conceptnet.bib eval-graph.pdf
