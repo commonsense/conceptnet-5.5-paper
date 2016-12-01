@@ -648,9 +648,9 @@ the breadth and the depth of its understanding of words.
 
 ConceptNet Numberbatch performed the best among the word-embedding systems at
 SAT analogies, getting 56.1\% of the questions correct (58.8\% on the half that
-was held out for final testing).  These analogy results are significantly
-better than analogies based on other word embeddings, evaluated in the same
-framework, to an extent that exceeds the 95\% confidence interval.
+was held out for final testing).  These analogy results outperform analogies
+based on other word embeddings, when evaluated in the same framework, as shown
+by Figure~\ref{eval-results}.
 
 \begin{table}[t]
 \centering
@@ -689,11 +689,11 @@ performance of the average human college applicant on these questions, said to
 be 57.0\% \cite{turney2006lra}.
 
 We have shown that knowledge-informed word embeddings are up to the challenge
-of real SAT analogies; they perform slightly better than non-word-embedding
-systems on the same evaluation, when previous embeddings perform significantly
-worse. In practice, recent word embeddings have instead been evaluated on
-simpler, synthetic analogy data sets \cite{mikolov2013word2vec}, and have not
-usually been compared to existing non-embedding-based methods of solving
+of real SAT analogies; they perform the same as or slightly better than
+non-word-embedding systems on the same evaluation, when other word embeddings
+perform worse. In practice, recent word embeddings have instead been evaluated
+on simpler, synthetic analogy data sets \cite{mikolov2013word2vec}, and have
+not usually been compared to existing non-embedding-based methods of solving
 analogies.
 
 We achieve this performance even though the system, like other systems that
@@ -706,7 +706,7 @@ analogies.
 \subsection{Story Cloze Test}
 
 The performance of our system on the Story Cloze Test was acceptable but
-unremarkable. ConceptNet Numberbatch chose the correct ending 59.5\% of the
+unremarkable. ConceptNet Numberbatch chose the correct ending 59.4\% of the
 time, which is in fact slightly better than any results reported by
 \citeauthor{mostafazadeh2016cloze} \shortcite{mostafazadeh2016cloze}, including
 neural nets trained on the task. However, we could also achieve a similar score
